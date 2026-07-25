@@ -1,0 +1,96 @@
+{
+  "info": {
+    "name": "Liora-Change-Stage-3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Daily Tracking",
+      "item": [
+        {
+          "name": "Complete Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/habits/tasks/1/complete",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "habits", "tasks", "1", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Skip Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Felt too sick today.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/habits/tasks/1/skip",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "habits", "tasks", "1", "skip"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports & Dashboards",
+      "item": [
+        {
+          "name": "Get Calendar History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/dashboards/habits/calendar",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "dashboards", "habits", "calendar"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

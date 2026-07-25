@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "Liora-Change-Stage-3-Progress-Engine",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Progress API",
+      "item": [
+        {
+          "name": "Get Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/dashboard",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Global Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/progress",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "progress"]
+            }
+          }
+        },
+        {
+          "name": "Get Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/statistics",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "statistics"]
+            }
+          }
+        },
+        {
+          "name": "Get Calendar Matrix",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/calendar",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "calendar"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

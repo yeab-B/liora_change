@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "Liora-Change-Stage-2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Challenges",
+      "item": [
+        {
+          "name": "Get All Challenges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/challenges",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "challenges"]
+            }
+          }
+        },
+        {
+          "name": "Create Draft Challenge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Morning Routine\",\n    \"description\": \"My daily morning habits.\",\n    \"difficulty_score\": \"beginner\",\n    \"visibility\": \"private\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/challenges",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "challenges"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

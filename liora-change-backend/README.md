@@ -1,3 +1,15 @@
+# Liora Change Backend
+
+## Hackathon docs (Backend + Mobile)
+
+Start here: **[docs/mvp/README.md](./docs/mvp/README.md)**
+
+- API contract: [docs/mvp/05-api-contract.md](./docs/mvp/05-api-contract.md)
+- Mobile quick ref: [docs/mvp/MOBILE-QUICKREF.md](./docs/mvp/MOBILE-QUICKREF.md)
+- Backend quick ref: [docs/mvp/BACKEND-QUICKREF.md](./docs/mvp/BACKEND-QUICKREF.md)
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

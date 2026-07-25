@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BadgeController;
 use App\Http\Controllers\Api\V1\ChallengeCategoryController;
 use App\Http\Controllers\Api\V1\ChallengeController;
 use App\Http\Controllers\Api\V1\ChallengeTemplateController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\ProgressController;
 use App\Http\Controllers\Api\V1\RecoveryController;
+use App\Http\Controllers\Api\V1\RewardController;
+use App\Http\Controllers\Api\V1\XpController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,5 +41,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'show']);
         Route::get('/recovery/current', [RecoveryController::class, 'current']);
         Route::get('/progress', [ProgressController::class, 'show']);
+
+        Route::get('/xp/history', [XpController::class, 'history']);
+        Route::get('/badges/unlocked', [BadgeController::class, 'unlocked']);
+        Route::post('/rewards/daily/claim', [RewardController::class, 'claimDaily']);
     });
 });

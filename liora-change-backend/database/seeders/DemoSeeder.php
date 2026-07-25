@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Badge;
 use App\Models\ChallengeCategory;
 use App\Models\ChallengeTemplate;
 use Illuminate\Database\Seeder;
@@ -68,6 +69,44 @@ class DemoSeeder extends Seeder
                     'difficulty' => $template['difficulty'],
                     'duration_days' => $template['duration_days'],
                     'category_id' => $categoriesBySlug[$template['category']]->id,
+                ]
+            );
+        }
+
+        $this->seedBadges();
+    }
+
+    /**
+     * Seed the 3 MVP gamification badges (docs/mvp/issues/06-gamification-admin.md
+     * "Badge auto-unlock"). Codes must match App\Services\BadgeService's
+     * constants exactly.
+     */
+    private function seedBadges(): void
+    {
+        $badges = [
+            [
+                'code' => 'first_checkin',
+                'name' => 'First Step',
+                'description' => 'Completed your first check-in',
+            ],
+            [
+                'code' => 'streak_3',
+                'name' => 'On a Roll',
+                'description' => 'Reached a 3-day streak on a challenge',
+            ],
+            [
+                'code' => 'comeback',
+                'name' => 'The Comeback',
+                'description' => 'Bounced back with a completed check-in right after a missed one',
+            ],
+        ];
+
+        foreach ($badges as $badge) {
+            Badge::firstOrCreate(
+                ['code' => $badge['code']],
+                [
+                    'name' => $badge['name'],
+                    'description' => $badge['description'],
                 ]
             );
         }

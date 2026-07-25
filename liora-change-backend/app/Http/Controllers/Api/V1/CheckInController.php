@@ -8,6 +8,7 @@ use App\Http\Resources\Api\V1\CheckInResource;
 use App\Models\Challenge;
 use App\Models\CheckIn;
 use App\Models\XpLedger;
+use App\Services\BadgeService;
 use App\Services\ProgressService;
 use App\Services\StreakService;
 use App\Services\XPService;
@@ -21,6 +22,7 @@ class CheckInController extends Controller
         private readonly StreakService $streakService,
         private readonly XPService $xpService,
         private readonly ProgressService $progressService,
+        private readonly BadgeService $badgeService,
     ) {
     }
 
@@ -99,6 +101,8 @@ class CheckInController extends Controller
                     'reason' => 'check_in_completed',
                 ]);
             }
+
+            $this->badgeService->evaluateAndUnlock($user, $challenge, $checkIn);
 
             return $checkIn;
         });

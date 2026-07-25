@@ -130,6 +130,33 @@ class DashboardApiTest extends TestCase
             ]);
     }
 
+    /**
+     * Added by Issue #9's endpoint coverage audit — GET /progress had no
+     * happy-path test anywhere in the suite before this.
+     */
+    public function test_progress_returns_aggregate_stats_across_challenges(): void
+    {
+        [$user, $token] = $this->actingUser();
+        $challenge = $this->activeChallenge($user->id);
+
+        $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->postJson("/api/v1/challenges/{$challenge->id}/check-ins", ['status' => 'completed'])
+            ->assertStatus(201);
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->getJson('/api/v1/progress');
+
+        $response->assertStatus(200)->assertJson([
+            'data' => [
+                'xp_total' => 10,
+                'completed_checkins' => 1,
+                'skipped_checkins' => 0,
+                'active_challenges' => 1,
+                'completed_challenges' => 0,
+            ],
+        ]);
+    }
+
     public function test_progress_requires_authentication(): void
     {
         $this->getJson('/api/v1/progress')->assertStatus(401);

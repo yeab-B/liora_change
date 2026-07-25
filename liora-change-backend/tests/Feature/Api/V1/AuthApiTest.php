@@ -184,6 +184,26 @@ class AuthApiTest extends TestCase
         ]);
     }
 
+    /**
+     * Added by Issue #9's endpoint coverage audit — PATCH /me only had a
+     * happy-path test, no failure case.
+     */
+    public function test_update_me_with_invalid_name_type_returns_validation_error(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('api')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/me', ['name' => ['not', 'a', 'string']]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_update_me_requires_authentication(): void
+    {
+        $this->patchJson('/api/v1/me', ['name' => 'Alex'])->assertStatus(401);
+    }
+
     public function test_logout_revokes_token(): void
     {
         $user = User::factory()->create();

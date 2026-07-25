@@ -85,7 +85,9 @@ Use this as the joint Backend + Mobile go/no-go list.
 
 | Issue | Owner | Workaround for demo | Fixed? |
 |-------|-------|---------------------|--------|
-| | | | |
+| `users.current_streak`/`longest_streak` are never incremented by check-ins — only the per-challenge `challenges.current_streak`/`longest_streak` (used by the dashboard/challenge payloads) update. `GET /me` and `GET /progress` echo the user-level columns, which stay `0` for the MVP. | Dev A/B (Issue #4/#5) | Demo the streak from the challenge card / dashboard, not from `GET /me`. | ❌ (documented limitation, not blocking demo) |
+| `INVALID_STATUS_TRANSITION` (ChallengeController), `CHALLENGE_NOT_ACTIVE` (CheckInController), and `ALREADY_CLAIMED` (RewardController) already return the correct `{message, code}` 422 envelope, but as ad-hoc `response()->json(...)` calls rather than the new `App\Exceptions\Api\BusinessRuleException` added in Issue #9. Behavior is identical; this is a code-cleanliness follow-up only. | Dev C (Issue #9) | None needed — responses already match the contract. | ❌ (non-blocking follow-up) |
+| `POST /rewards/daily/claim` (Issue #6) is fully implemented and tested but isn't listed in `SHARED-DATA-CONTRACT.md` §4's endpoint table. | Dev B (Issue #6) | None needed — endpoint works correctly. | ❌ (docs-only gap) |
 
 ---
 

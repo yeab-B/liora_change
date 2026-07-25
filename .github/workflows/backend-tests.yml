@@ -1,0 +1,59 @@
+name: Backend Tests
+
+on:
+  push:
+    paths:
+      - 'liora-change-backend/**'
+      - '.github/workflows/backend-tests.yml'
+  pull_request:
+    paths:
+      - 'liora-change-backend/**'
+      - '.github/workflows/backend-tests.yml'
+
+defaults:
+  run:
+    working-directory: liora-change-backend
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # No real MySQL/OpenAI needed for CI: the app uses SQLite in-memory for
+    # tests (phpunit.xml) and every AI test mocks OpenAI with Http::fake()
+    # (docs/mvp/issues/07/08) — this job fails loudly if anyone ever makes a
+    # real network call by accident.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, fileinfo, pdo, pdo_sqlite, sqlite3, bcmath, ctype, curl, tokenizer, xml
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('liora-change-backend/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment file
+        run: |
+          cp .env.example .env
+          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=:memory:/' .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Run test suite
+        run: php artisan test

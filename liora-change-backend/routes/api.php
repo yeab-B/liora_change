@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChallengeCategoryController;
 use App\Http\Controllers\Api\V1\ChallengeController;
 use App\Http\Controllers\Api\V1\ChallengeTemplateController;
+use App\Http\Controllers\Api\V1\CheckInController;
 use App\Http\Controllers\Api\V1\MeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/challenges', [ChallengeController::class, 'store']);
         Route::get('/challenges/{challenge}', [ChallengeController::class, 'show']);
         Route::post('/challenges/{challenge}/activate', [ChallengeController::class, 'activate']);
+        Route::post('/challenges/{challenge}/check-ins', [CheckInController::class, 'store']);
+        Route::get('/challenges/{challenge}/check-ins', [CheckInController::class, 'index']);
 
         Route::get('/challenge-categories', [ChallengeCategoryController::class, 'index']);
         Route::get('/challenge-templates', [ChallengeTemplateController::class, 'index']);

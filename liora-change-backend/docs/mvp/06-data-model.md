@@ -181,16 +181,31 @@ Optional cache on `challenges`: `current_streak`, `longest_streak`, `completed_c
 
 ---
 
+## AI / RAG tables (MVP-MUST)
+
+| Table | Purpose |
+|-------|---------|
+| `knowledge_articles` | Filament-managed coaching/FAQ content |
+| `knowledge_chunks` | Retrieved text for simple RAG |
+| `chat_sessions` | Per-user chatbot threads |
+| `chat_messages` | user/assistant messages |
+
+See [09-simple-ai-rag-chat.md](./09-simple-ai-rag-chat.md) and Backend team guide for columns.
+
+---
+
 ## Seed data for demo
 
 ```text
 User: demo@liora.change / password
+Admin: admin@liora.change / password
 Categories: Health, Focus, Wellbeing
 Templates:
   - 7-Day Morning Walk (beginner, 7)
   - No Sugar Week (medium, 7)
   - Night Phone Curfew (easy, 7)
 Badges: first_checkin, streak_3, comeback
+Knowledge: Recovery basics, Tiny habits, Humane streaks, Check-in FAQ
 ```
 
 ---

@@ -41,6 +41,7 @@ Mobile **does not** call Filament. Filament writes the same MySQL data the API r
 | `ChallengeCategoryResource` | ChallengeCategory | Manage categories |
 | `ChallengeTemplateResource` | ChallengeTemplate | Manage starter templates |
 | `FeaturedChallengeResource` | FeaturedChallenge | Highlight challenges (nice) |
+| KnowledgeArticleResource *(add)* | KnowledgeArticle | Simple RAG knowledge (MUST) |
 
 ---
 
@@ -66,15 +67,25 @@ Backend team must ensure for demo:
 
 ---
 
+### Knowledge (MUST — powers simple RAG chatbot)
+
+Add **KnowledgeArticleResource**:
+- Fields: `title`, `body`, `category`, `is_active`
+- On save: Backend re-chunks into `knowledge_chunks` for `/ai/chat`
+
+Demo: edit “Recovery basics” → ask chatbot the same question → answer should reflect content.
+
+---
+
 ## Out of Filament MVP (LATER)
 
 | Cut from admin for hackathon |
 |------------------------------|
-| RAG knowledge base UI |
 | Prompt template versioning UI |
 | Voice / AI provider settings |
 | Full moderation case queue |
 | Complex analytics BI |
+| Qdrant / vector admin |
 
 ---
 

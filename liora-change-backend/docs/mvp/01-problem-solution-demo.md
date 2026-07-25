@@ -23,9 +23,9 @@ Liora Change is a **behavioral transformation MVP**:
 | 2. Action | Daily **check-in** (complete / skip with reason) |
 | 3. Feedback | Show **progress, streak, XP** |
 | 4. Recovery | After a miss, show a **recovery nudge** (not shame) |
-| 5. Support | Optional short **AI/template motivation** |
+| 5. Support | **AI motivation** from the user’s challenge + **simple RAG chatbot** |
 
-We are **not** building full AI voice/RAG for the hackathon. We show the **core loop** that solves the problem.
+We are **not** building voice or a heavy vector DB. We **do** ship simple OpenAI motivation + MySQL RAG chat for the hackathon.
 
 ---
 
@@ -40,10 +40,12 @@ Use this exact story for judges:
 5. **Skip tomorrow** (or simulate miss) → streak resets, recovery message appears  
 6. **Recover:** check in again + show encouraging message  
 7. **Dashboard:** progress %, streak, XP, recent activity  
-8. **(Backend) Filament admin:** open `/liora_change` → show Categories / Templates / Users  
+8. **AI Motivation:** tap Motivate → text mentions their challenge title  
+9. **AI Chatbot:** ask “What if I miss a day?” → grounded recovery answer  
+10. **(Backend) Filament admin:** Categories / Templates / Knowledge / Users  
 
 **Punchline:**  
-> “Trackers punish failure. Liora helps you recover and continue — and admins curate the challenges behind the app.”
+> “Trackers punish failure. Liora helps you recover — with AI coaching grounded in your challenge and our knowledge base.”
 
 ---
 
@@ -56,7 +58,8 @@ Use this exact story for judges:
 | I couldn’t today | Skip / Miss | same check-in with `status: skipped` |
 | Am I improving? | Dashboard | `GET /dashboard` |
 | I feel bad after miss | Recovery banner | `GET /recovery/current` + motivation |
-| Keep me going | Motivation card | `POST /ai/motivation` (stub OK) |
+| Keep me going | Motivation card | `POST /ai/motivation` (OpenAI + challenge context) |
+| Ask for help | Coach chat | `POST /ai/chat` (simple RAG) |
 
 ---
 
@@ -69,5 +72,7 @@ Demo is successful if a judge can see:
 - [ ] Check-in updates streak/progress  
 - [ ] Skip/miss triggers recovery UI (not only “streak lost”)  
 - [ ] Dashboard shows progress + XP  
-- [ ] Filament admin works (login + templates/categories)  
+- [ ] AI motivation mentions the user’s challenge  
+- [ ] AI chatbot answers with simple RAG (seeded knowledge)  
+- [ ] Filament admin works (login + templates/categories/knowledge)  
 - [ ] Backend and mobile used the **same API contract**

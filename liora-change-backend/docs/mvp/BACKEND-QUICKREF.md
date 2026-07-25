@@ -1,6 +1,9 @@
 # Backend Quick Reference (Laravel)
 
-Print / pin this. Full details: [05-api-contract.md](./05-api-contract.md) · [06-data-model.md](./06-data-model.md)
+Print / pin this.  
+**Full backend handbook:** [teams/BACKEND-TEAM-GUIDE.md](./teams/BACKEND-TEAM-GUIDE.md)  
+**Schemas (same as mobile):** [teams/SHARED-DATA-CONTRACT.md](./teams/SHARED-DATA-CONTRACT.md)  
+API examples: [05-api-contract.md](./05-api-contract.md) · DB: [06-data-model.md](./06-data-model.md)
 
 ## Implement first (MUST)
 
@@ -21,7 +24,11 @@ GET  /api/v1/challenges/{id}/check-ins
 
 GET  /api/v1/dashboard
 GET  /api/v1/recovery/current
+POST /api/v1/ai/motivation
+POST /api/v1/ai/chat
 ```
+
+AI: OpenAI motivation from challenge + simple MySQL RAG chat. See [09-simple-ai-rag-chat.md](./09-simple-ai-rag-chat.md)
 
 ## Business rules to code
 
@@ -64,8 +71,8 @@ Filament writes same DB as API. Show it in the demo after the mobile flow.
 
 ## Do not build for hackathon
 
-Voice · RAG/Qdrant · risk ML · social partners · FAL images · full i18n  
-(Do **not** cut Filament — it is in scope.)
+Voice · Qdrant/Pinecone · risk ML · social partners · FAL images · full i18n  
+(Do **not** cut Filament, AI motivation, or simple RAG chat.)
 
 ## Freeze
 

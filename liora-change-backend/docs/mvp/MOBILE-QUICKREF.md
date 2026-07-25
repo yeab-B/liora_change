@@ -1,6 +1,9 @@
 # Mobile Quick Reference (Flutter)
 
-Print / pin this. Full details: [05-api-contract.md](./05-api-contract.md)
+Print / pin this.  
+**Full mobile handbook:** [teams/MOBILE-TEAM-GUIDE.md](./teams/MOBILE-TEAM-GUIDE.md)  
+**Schemas (same as backend):** [teams/SHARED-DATA-CONTRACT.md](./teams/SHARED-DATA-CONTRACT.md)  
+API examples: [05-api-contract.md](./05-api-contract.md)
 
 ## Config
 
@@ -28,7 +31,8 @@ Use LAN IP for physical device (not `localhost`).
 |--------|-------|
 | Login | `POST /auth/login` |
 | Register | `POST /auth/register` |
-| Home | `GET /dashboard` (+ optional `POST /ai/motivation`) |
+| Home | `GET /dashboard` + `POST /ai/motivation` |
+| Coach | `POST /ai/chat` (keep `session_id`) |
 | Challenge list | `GET /challenges` |
 | Create | `POST /challenges` |
 | Detail | `GET /challenges/{id}`, activate, check-ins |

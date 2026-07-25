@@ -48,15 +48,25 @@ Use this as the joint Backend + Mobile go/no-go list.
 
 ---
 
-## E. Filament admin (MUST)
+## E. AI Motivation + RAG Chat (MUST)
+
+- [ ] `POST /ai/motivation` with `challenge_id` returns message mentioning challenge
+- [ ] Motivation works with OpenAI; template fallback if key missing
+- [ ] `POST /ai/chat` answers “What if I miss a day?” using seeded knowledge
+- [ ] Chat response includes `session_id`, assistant `message`, optional `sources`
+- [ ] Mobile Home motivate button + Coach chat screen wired
+- [ ] Knowledge articles exist in Filament / seeder
+
+## F. Filament admin (MUST)
 
 - [ ] `/liora_change` loads and admin can log in (`admin@liora.change`)
 - [ ] Users list shows demo/mobile members
 - [ ] Categories can be viewed/created
 - [ ] Templates can be viewed/created
-- [ ] Template/category data is what API/mobile can consume (same DB)
+- [ ] Knowledge articles can be viewed/created (RAG)
+- [ ] Template/category/knowledge data is what API/mobile can consume (same DB)
 
-## F. Demo rehearsal (3–4 minutes)
+## G. Demo rehearsal (3–4 minutes)
 
 - [ ] Cold start → login as demo user **or** register live
 - [ ] Create “Morning Walk”
@@ -64,12 +74,14 @@ Use this as the joint Backend + Mobile go/no-go list.
 - [ ] Show streak/XP on Home
 - [ ] Skip / show recovery message
 - [ ] Complete again → comeback
-- [ ] Open Filament → show Templates / Categories / Users
-- [ ] Say punchline: *Trackers punish failure. Liora helps you recover — admins curate the challenges.*
+- [ ] Tap Motivate me → AI text mentions challenge
+- [ ] Coach chat → ask about missing a day
+- [ ] Open Filament → Templates / Categories / Knowledge / Users
+- [ ] Say punchline: *Trackers punish failure. Liora helps you recover — with AI coaching on your challenge.*
 
 ---
 
-## G. Known issues log
+## H. Known issues log
 
 | Issue | Owner | Workaround for demo | Fixed? |
 |-------|-------|---------------------|--------|
@@ -77,7 +89,7 @@ Use this as the joint Backend + Mobile go/no-go list.
 
 ---
 
-## H. Freeze rule
+## I. Freeze rule
 
 **T-60 minutes before judging:** API shape freeze.  
 Only bugfixes allowed. No new fields unless demo is blocked.

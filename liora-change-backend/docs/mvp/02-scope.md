@@ -11,7 +11,9 @@
 - Daily check-in (complete / skip)  
 - Streak + XP display  
 - Recovery banner after miss/skip  
-- Basic profile (name, timezone optional)
+- Basic profile (name, timezone optional)  
+- **AI Motivation button** (text from challenge via API)  
+- **AI Coach chatbot screen** (simple RAG chat)
 
 ### Backend API
 - Sanctum auth  
@@ -22,6 +24,9 @@
 - Recovery current endpoint  
 - Consistent JSON error format  
 - Seed data: demo member + admin + templates/categories  
+- **`POST /ai/motivation`** — OpenAI text based on user’s challenge (+ template fallback)  
+- **`POST /ai/chat`** — simple RAG chatbot (MySQL knowledge chunks + OpenAI)  
+- Seed knowledge articles/chunks for RAG  
 
 ### Backend Admin — Filament (MVP-MUST)
 - Filament panel live at `/liora_change`  
@@ -29,25 +34,25 @@
 - Manage **Users**  
 - Manage **Challenge Categories**  
 - Manage **Challenge Templates**  
+- Manage **Knowledge Articles** (for simple RAG)  
 - (Existing resources in repo — wire/seed for demo; see [08-filament-admin.md](./08-filament-admin.md))  
 
 Filament and API share the **same MySQL** data. Mobile never calls Filament directly.
 
-### Demo-only AI (MVP-NICE)
-- `POST /ai/motivation` returns personalized text  
-  - Can be **template-based** (no OpenAI required for demo)  
-  - If OpenAI key exists, optional real call
+AI details: [09-simple-ai-rag-chat.md](./09-simple-ai-rag-chat.md)
 
 ---
 
 ## Nice if time (MVP-NICE)
 
 - Challenge templates list from API (`GET /challenge-templates`) consumed by mobile  
+- Chat session history endpoints  
 - Badges unlocked list  
 - Daily reward claim  
 - Filament: Challenges list, Featured challenges, simple widgets  
 - Calendar heatmap endpoint  
 - Forgot password  
+- Embedding-based retrieval (upgrade from keyword RAG)
 
 ---
 
@@ -55,7 +60,7 @@ Filament and API share the **same MySQL** data. Mobile never calls Filament dire
 
 | Cut | Why |
 |-----|-----|
-| Full RAG / vector DB | Too heavy for demo |
+| Full vector DB (Qdrant/Pinecone) | Use simple MySQL RAG for MVP |
 | Voice STT/TTS | Integration risk |
 | Risk prediction ML | Not needed to prove loop |
 | Social accountability partners | Scope explosion |

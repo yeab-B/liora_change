@@ -19,8 +19,9 @@
 | Check-ins | Owns streak/XP side effects | Owns complete/skip UX |
 | Dashboard | Owns aggregation | Owns widgets |
 | Recovery | Owns when recovery is “active” | Owns banner + CTA |
-| Motivation AI stub | Owns endpoint (template or LLM) | Owns card UI |
-| **Filament admin** | **Owns panel `/liora_change`, users, categories, templates** | Does not use Filament; may list templates via API |
+| AI Motivation | Owns OpenAI + challenge prompt + fallback | Owns “Motivate me” UI |
+| AI Chat + simple RAG | Owns knowledge chunks, retrieve, `/ai/chat` | Owns Coach chat screen |
+| **Filament admin** | **Panel `/liora_change`: users, categories, templates, knowledge** | Does not use Filament; may list templates via API |
 | Validation errors | Returns standard 422 | Shows field errors |
 | Offline | — | Optional Hive cache (nice) |
 | Push notifications | LATER | LATER |
@@ -47,8 +48,8 @@
 | Backend | Mobile |
 |---------|--------|
 | Recovery endpoint | Recovery banner |
-| Motivation stub | Motivation card |
-| Filament: categories + templates demo-ready | Optional: pick from templates API |
+| AI motivation + RAG chat | Motivate button + Coach chat screen |
+| Filament: categories + templates + knowledge | Optional: pick from templates API |
 | Fix contract mismatches | Wire loading/error states |
 
 ### Hour 7–end

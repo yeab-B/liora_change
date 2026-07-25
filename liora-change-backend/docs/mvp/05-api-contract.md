@@ -627,9 +627,16 @@ Suggested seed badges: `first_checkin`, `streak_3`, `streak_7`, `comeback` (firs
 
 ---
 
-## 7. AI Motivation — MVP-NICE (stub allowed)
+## 7. AI — MVP-MUST (Motivation + simple RAG Chatbot)
+
+Full design: [09-simple-ai-rag-chat.md](./09-simple-ai-rag-chat.md)  
+Schemas: [teams/SHARED-DATA-CONTRACT.md](./teams/SHARED-DATA-CONTRACT.md)
+
+### 7.1 AI Motivation (based on challenge) — MUST
 
 `POST /ai/motivation` · Auth
+
+Generates short motivational text using OpenAI from the user’s challenge (title, description, streak, progress, context).
 
 **Request**
 
@@ -640,20 +647,87 @@ Suggested seed badges: `first_checkin`, `streak_3`, `streak_7`, `comeback` (firs
 }
 ```
 
+| Field | Required | Values |
+|-------|----------|--------|
+| challenge_id | yes (prefer) | int — user’s challenge |
+| context | no | `morning` \| `recovery` \| `general` |
+
 **Response `200`**
 
 ```json
 {
   "data": {
-    "message": "Alex, a 10-minute walk keeps your Morning Walk alive. Start tiny — shoes on is enough.",
+    "message": "Alex, your Morning Walk only needs 10 minutes. Keep today’s bar tiny — step outside and begin.",
     "tone": "encouraging",
-    "source": "template"
+    "source": "openai",
+    "challenge_id": 1,
+    "challenge_title": "Morning Walk"
   }
 }
 ```
 
-`source`: `template | openai`  
-If provider fails → return template fallback (never 500 for demo if avoidable).
+`source`: `openai` | `template`  
+If OpenAI fails / no key → personalized **template** fallback (still include challenge title). Prefer `200` over `500` for demo.
+
+**Backend must include in the LLM prompt:** user name, challenge title/description, difficulty, streak, progress_percent, last check-in status, context.
+
+---
+
+### 7.2 AI Chatbot + simple RAG — MUST
+
+`POST /ai/chat` · Auth
+
+Simple RAG: retrieve knowledge chunks from MySQL → prompt OpenAI with chunks + optional challenge context + recent messages.
+
+**Request**
+
+```json
+{
+  "message": "What should I do if I miss a day?",
+  "session_id": null,
+  "challenge_id": 1
+}
+```
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| message | yes | max 1000 chars |
+| session_id | no | null/omit = create new session |
+| challenge_id | no | personalizes answer to that challenge |
+
+**Response `200`**
+
+```json
+{
+  "data": {
+    "session_id": 3,
+    "message": {
+      "id": 12,
+      "session_id": 3,
+      "role": "assistant",
+      "content": "Missing a day is normal. For Morning Walk, restart with 5 minutes today — the goal is returning, not perfection.",
+      "created_at": "2026-07-25T12:00:00Z"
+    },
+    "sources": [
+      {
+        "title": "Recovery basics",
+        "snippet": "After a miss, restart with a tiny action instead of quitting."
+      }
+    ],
+    "used_challenge_id": 1
+  }
+}
+```
+
+**Fallback:** if OpenAI down, answer from best matching chunk text or canned FAQ (`sources` may still be filled).
+
+---
+
+### 7.3 Chat history — NICE
+
+`GET /ai/chat/sessions` → `{ "data": [ ChatSession ] }`  
+
+`GET /ai/chat/sessions/{id}/messages` → `{ "data": [ ChatMessage ] }`
 
 ---
 
@@ -713,10 +787,13 @@ Mobile create screen can prefill from template.
 | 12 | GET | `/dashboard` | MUST | Backend |
 | 13 | GET | `/recovery/current` | MUST | Backend |
 | 14 | GET | `/progress` | NICE | Backend |
-| 15 | POST | `/ai/motivation` | NICE | Backend |
-| 16 | GET | `/challenge-templates` | NICE | Backend |
-| 17 | GET | `/xp/history` | NICE | Backend |
-| 18 | GET | `/badges/unlocked` | NICE | Backend |
+| 15 | POST | `/ai/motivation` | MUST | Backend |
+| 16 | POST | `/ai/chat` | MUST | Backend |
+| 17 | GET | `/ai/chat/sessions` | NICE | Backend |
+| 18 | GET | `/ai/chat/sessions/{id}/messages` | NICE | Backend |
+| 19 | GET | `/challenge-templates` | NICE | Backend |
+| 20 | GET | `/xp/history` | NICE | Backend |
+| 21 | GET | `/badges/unlocked` | NICE | Backend |
 
 ---
 

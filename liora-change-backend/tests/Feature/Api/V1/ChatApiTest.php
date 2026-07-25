@@ -211,6 +211,26 @@ class ChatApiTest extends TestCase
         $this->postJson('/api/v1/ai/chat', ['message' => 'Hi'])->assertStatus(401);
     }
 
+    /**
+     * Added by Issue #9's endpoint coverage audit — the nice-to-have
+     * history endpoints only had happy-path/ownership-forbidden tests,
+     * not an unauthenticated or unknown-id case.
+     */
+    public function test_chat_history_endpoints_require_authentication(): void
+    {
+        $this->getJson('/api/v1/ai/chat/sessions')->assertStatus(401);
+        $this->getJson('/api/v1/ai/chat/sessions/1/messages')->assertStatus(401);
+    }
+
+    public function test_messages_endpoint_returns_404_for_unknown_session(): void
+    {
+        [, $token] = $this->actingUser();
+
+        $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->getJson('/api/v1/ai/chat/sessions/999999/messages')
+            ->assertStatus(404);
+    }
+
     public function test_sessions_and_messages_history_endpoints_return_owned_data(): void
     {
         config(['services.openai.key' => null]);

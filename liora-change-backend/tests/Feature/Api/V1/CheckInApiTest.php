@@ -202,6 +202,24 @@ class CheckInApiTest extends TestCase
         $this->assertContains($response->status(), [403, 404]);
     }
 
+    /**
+     * Added by Issue #9's endpoint coverage audit — GET
+     * /challenges/{id}/check-ins only had a 401 failure case, not a 403
+     * ownership one, even though CheckInController@index authorizes via
+     * the same ChallengePolicy as the POST route above.
+     */
+    public function test_index_on_another_users_challenge_is_forbidden(): void
+    {
+        [$owner] = $this->actingUser();
+        [, $otherToken] = $this->actingUser();
+        $challenge = $this->activeChallenge($owner->id);
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$otherToken])
+            ->getJson("/api/v1/challenges/{$challenge->id}/check-ins");
+
+        $this->assertContains($response->status(), [403, 404]);
+    }
+
     public function test_invalid_status_value_returns_validation_error(): void
     {
         [$user, $token] = $this->actingUser();

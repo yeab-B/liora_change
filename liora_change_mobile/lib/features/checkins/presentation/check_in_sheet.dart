@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/animated_count.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/secondary_button.dart';
 import '../../../models/check_in_result.dart';
@@ -267,32 +268,13 @@ class _DidItButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppSemanticColors semantic = context.semanticColors;
 
-    return SizedBox(
-      width: double.infinity,
-      child: FilledButton(
-        onPressed: isLoading ? null : onPressed,
-        style: FilledButton.styleFrom(
-          backgroundColor: semantic.success,
-          foregroundColor: semantic.onSuccess,
-        ),
-        child: isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: semantic.onSuccess,
-                ),
-              )
-            : const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(Icons.celebration_rounded, size: 20),
-                  SizedBox(width: AppSpacing.xs),
-                  Flexible(child: Text('I did it!')),
-                ],
-              ),
-      ),
+    return PrimaryButton(
+      label: 'I did it!',
+      icon: Icons.celebration_rounded,
+      isLoading: isLoading,
+      onPressed: onPressed,
+      backgroundColor: semantic.success,
+      foregroundColor: semantic.onSuccess,
     );
   }
 }
@@ -433,12 +415,11 @@ class _CountUp extends StatelessWidget {
       children: <Widget>[
         Icon(icon, color: semantic.success),
         const SizedBox(height: AppSpacing.xxs),
-        TweenAnimationBuilder<int>(
-          tween: IntTween(begin: 0, end: value),
+        AnimatedCount(
+          value: value,
+          prefix: prefix,
           duration: const Duration(milliseconds: 700),
-          curve: Curves.easeOutCubic,
-          builder: (BuildContext context, int shown, _) =>
-              Text('$prefix$shown', style: theme.textTheme.displaySmall),
+          style: theme.textTheme.displaySmall,
         ),
         Text(label, style: theme.textTheme.labelSmall),
       ],

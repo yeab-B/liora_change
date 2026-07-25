@@ -15,25 +15,30 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const AppWordmark(size: AppSpacing.xxl),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'Small steps, every day.',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              SizedBox(
-                height: 28,
-                width: 28,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  color: theme.colorScheme.primary,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenHorizontal,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const AppWordmark(size: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  'Small steps, every day.',
+                  style: theme.textTheme.bodyMedium,
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.xl),
+                SizedBox(
+                  height: 28,
+                  width: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

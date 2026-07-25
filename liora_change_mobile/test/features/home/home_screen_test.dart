@@ -20,6 +20,7 @@ import 'package:liora_change_mobile/features/home/data/dashboard_repository.dart
 import 'package:liora_change_mobile/features/home/presentation/home_screen.dart';
 import 'package:liora_change_mobile/features/home/presentation/widgets/greeting_header.dart';
 import 'package:liora_change_mobile/features/home/presentation/widgets/home_slots.dart';
+import 'package:liora_change_mobile/features/motivation/presentation/motivation_card.dart';
 import 'package:liora_change_mobile/models/dashboard.dart';
 
 import '../../support/fake_challenge_repository.dart';
@@ -117,6 +118,16 @@ Future<void> _pumpHome(
         path: '/recovery',
         builder: (BuildContext context, GoRouterState state) =>
             const Scaffold(body: Text('recovery screen')),
+      ),
+      GoRoute(
+        path: '/coach',
+        builder: (BuildContext context, GoRouterState state) =>
+            const Scaffold(body: Text('coach screen')),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (BuildContext context, GoRouterState state) =>
+            const Scaffold(body: Text('profile screen')),
       ),
     ],
   );
@@ -315,6 +326,19 @@ void main() {
     expect(find.text('recovery screen'), findsOneWidget);
   });
 
+  testWidgets('the header opens the coach and the profile', (
+    WidgetTester tester,
+  ) async {
+    await _pumpHome(tester, _FakeDashboardRepository(() async => _dashboard()));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.forum_rounded), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.person_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.text('profile screen'), findsOneWidget);
+  });
+
   testWidgets('a failure shows the retry view and retrying refetches', (
     WidgetTester tester,
   ) async {
@@ -398,7 +422,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final Rect card = tester.getRect(find.byType(MotivationSlot));
+      final Rect card = tester.getRect(find.byType(MotivationCard));
       expect(card.width, AppLayout.maxContentWidth);
       expect(card.center.dx, closeTo(1024 / 2, 0.5));
     });
@@ -436,7 +460,7 @@ void main() {
       final Material card = tester.widget<Material>(
         find
             .descendant(
-              of: find.byType(MotivationSlot),
+              of: find.byType(MotivationCard),
               matching: find.byType(Material),
             )
             .first,

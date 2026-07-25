@@ -87,6 +87,52 @@ enum RecoveryReason {
   String get wire => name;
 }
 
+enum ChatRole {
+  user,
+  assistant;
+
+  static ChatRole fromWire(Object? value) =>
+      value == 'user' ? ChatRole.user : ChatRole.assistant;
+
+  String get wire => name;
+}
+
+enum MotivationTone {
+  encouraging,
+  calm,
+  direct,
+  celebratory;
+
+  static MotivationTone fromWire(Object? value) {
+    for (final MotivationTone tone in MotivationTone.values) {
+      if (tone.name == value) return tone;
+    }
+    return MotivationTone.encouraging;
+  }
+
+  String get wire => name;
+}
+
+/// Where the message came from. The UI renders both identically — this is for
+/// the backend's analytics, not a quality signal to the member.
+enum MotivationSource {
+  openai,
+  template;
+
+  static MotivationSource fromWire(Object? value) =>
+      value == 'openai' ? MotivationSource.openai : MotivationSource.template;
+
+  String get wire => name;
+}
+
+enum MotivationContext {
+  morning,
+  recovery,
+  general;
+
+  String get wire => name;
+}
+
 enum SuggestedActionType {
   checkIn('check_in');
 

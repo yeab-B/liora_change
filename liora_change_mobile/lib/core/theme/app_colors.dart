@@ -40,6 +40,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.onSuccess,
     required this.recovery,
     required this.onRecovery,
+    required this.onRecoverySurface,
   });
 
   static const AppSemanticColors light = AppSemanticColors(
@@ -47,6 +48,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     onSuccess: Color(0xFFFFFFFF),
     recovery: AppColorTokens.recovery,
     onRecovery: Color(0xFF3D2A00),
+    onRecoverySurface: Color(0xFF7A4E00),
   );
 
   static const AppSemanticColors dark = AppSemanticColors(
@@ -54,12 +56,22 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     onSuccess: Color(0xFF07240B),
     recovery: AppColorTokens.recoveryDark,
     onRecovery: Color(0xFF3D2A00),
+    onRecoverySurface: AppColorTokens.recoveryDark,
   );
 
   final Color success;
   final Color onSuccess;
   final Color recovery;
+
+  /// Foreground on the solid [recovery] amber.
   final Color onRecovery;
+
+  /// Foreground on [recoverySurface]. The amber itself is too pale to read
+  /// against its own light tint, so light mode darkens it.
+  final Color onRecoverySurface;
+
+  /// The tinted card behind every comeback message.
+  Color get recoverySurface => recovery.withValues(alpha: 0.14);
 
   @override
   AppSemanticColors copyWith({
@@ -67,12 +79,14 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? onSuccess,
     Color? recovery,
     Color? onRecovery,
+    Color? onRecoverySurface,
   }) {
     return AppSemanticColors(
       success: success ?? this.success,
       onSuccess: onSuccess ?? this.onSuccess,
       recovery: recovery ?? this.recovery,
       onRecovery: onRecovery ?? this.onRecovery,
+      onRecoverySurface: onRecoverySurface ?? this.onRecoverySurface,
     );
   }
 
@@ -84,6 +98,11 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       onSuccess: Color.lerp(onSuccess, other.onSuccess, t)!,
       recovery: Color.lerp(recovery, other.recovery, t)!,
       onRecovery: Color.lerp(onRecovery, other.onRecovery, t)!,
+      onRecoverySurface: Color.lerp(
+        onRecoverySurface,
+        other.onRecoverySurface,
+        t,
+      )!,
     );
   }
 }

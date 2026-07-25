@@ -73,10 +73,14 @@ class AppWordmark extends StatelessWidget {
       children: <Widget>[
         Icon(Icons.spa_rounded, size: size, color: theme.colorScheme.primary),
         const SizedBox(width: AppSpacing.sm),
-        Text(
-          'Liora Change',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.primary,
+        // Flexible so a large OS text scale wraps the name instead of
+        // pushing it off the edge.
+        Flexible(
+          child: Text(
+            'Liora Change',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
           ),
         ),
       ],

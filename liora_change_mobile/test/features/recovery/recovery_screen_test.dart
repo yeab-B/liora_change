@@ -303,8 +303,14 @@ void main() {
       for (final Icon icon in icons) {
         expect(icon.color, isNot(AppTheme.light.colorScheme.error));
       }
+      // Light mode darkens the amber for contrast, so the emphasis colour is
+      // the recovery family rather than the raw token.
       expect(
-        icons.any((Icon icon) => icon.color == semantic.recovery),
+        icons.any(
+          (Icon icon) =>
+              icon.color == semantic.recovery ||
+              icon.color == semantic.onRecoverySurface,
+        ),
         isTrue,
         reason: 'the recovery amber carries the emphasis',
       );

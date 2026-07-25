@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/animated_count.dart';
 import '../../../../core/widgets/streak_badge.dart';
 import '../../../../models/dashboard.dart';
 
 /// Time-of-day greeting, level/XP line, and the streak — the "how am I doing"
 /// glance that opens Home.
 class GreetingHeader extends StatelessWidget {
-  const GreetingHeader({super.key, required this.user});
+  const GreetingHeader({
+    super.key,
+    required this.user,
+    this.onOpenCoach,
+    this.onOpenProfile,
+  });
 
   final DashboardUser user;
+
+  /// Home's way into the coach; omitted, the button is not rendered.
+  final VoidCallback? onOpenCoach;
+
+  /// Home's way into the profile; omitted, the avatar is not rendered.
+  final VoidCallback? onOpenProfile;
 
   static String greetingFor(DateTime time) {
     if (time.hour < 12) return 'Good morning';
@@ -22,27 +34,39 @@ class GreetingHeader extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final String firstName = user.name.split(' ').first;
 
-    return Row(
+    // The streak and the two shortcuts sit on their own line: sharing one row
+    // with the greeting left the name wrapping over three lines on a phone.
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                '${greetingFor(DateTime.now())}, $firstName',
-                style: theme.textTheme.displaySmall,
+        Row(
+          children: <Widget>[
+            AnimatedStreakBadge(streak: user.currentStreak),
+            const Spacer(),
+            if (onOpenCoach != null)
+              IconButton(
+                onPressed: onOpenCoach,
+                tooltip: 'Ask your coach',
+                icon: const Icon(Icons.forum_rounded),
               ),
-              const SizedBox(height: AppSpacing.xxs),
-              Text(
-                'Level ${user.level} · ${user.xpTotal} XP',
-                style: theme.textTheme.bodyMedium,
+            if (onOpenProfile != null)
+              IconButton(
+                onPressed: onOpenProfile,
+                tooltip: 'Your profile',
+                icon: const Icon(Icons.person_rounded),
               ),
-            ],
-          ),
+          ],
         ),
-        const SizedBox(width: AppSpacing.sm),
-        AnimatedStreakBadge(streak: user.currentStreak),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          '${greetingFor(DateTime.now())}, $firstName',
+          style: theme.textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(
+          'Level ${user.level} · ${user.xpTotal} XP',
+          style: theme.textTheme.bodyMedium,
+        ),
       ],
     );
   }
@@ -57,11 +81,9 @@ class AnimatedStreakBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<int>(
-      tween: IntTween(begin: 0, end: streak),
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOutCubic,
-      builder: (BuildContext context, int value, _) =>
+    return AnimatedCountBuilder(
+      value: streak,
+      builder: (BuildContext context, int value) =>
           StreakBadge(streak: value, compact: true),
     );
   }

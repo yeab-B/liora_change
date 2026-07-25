@@ -9,8 +9,12 @@ import 'dart:math';
 /// app restarts; the seeded demo account keeps a stable token so a relaunch
 /// still resumes its session.
 class MockBackend {
-  MockBackend() {
-    _seed();
+  /// [seedHistory] gives the demo account a challenge that was completed two
+  /// days ago and skipped yesterday, so the app opens on a live recovery
+  /// banner and today's comeback check-in is still available. Tests that
+  /// assert absolute XP or challenge counts pass false and start from zero.
+  MockBackend({bool seedHistory = true}) {
+    _seed(seedHistory: seedHistory);
   }
 
   static const String demoEmail = 'alex@example.com';
@@ -36,14 +40,82 @@ class MockBackend {
   int _nextSessionId = 1;
   int _nextMessageId = 1;
 
-  void _seed() {
-    _users.add(
-      _User(
-        id: _nextUserId++,
-        name: 'Alex Demo',
-        email: demoEmail,
-        password: demoPassword,
-        timezone: 'Africa/Addis_Ababa',
+  void _seed({required bool seedHistory}) {
+    final _User alex = _User(
+      id: _nextUserId++,
+      name: 'Alex Demo',
+      email: demoEmail,
+      password: demoPassword,
+      timezone: 'Africa/Addis_Ababa',
+    );
+    _users.add(alex);
+    if (!seedHistory) return;
+
+    final DateTime today = _today();
+    final _Challenge walk = _Challenge(
+      id: _nextChallengeId++,
+      userId: alex.id,
+      title: 'Morning Walk',
+      description: 'Walk 10 minutes after waking up.',
+      difficulty: 'easy',
+      visibility: 'private',
+      categoryId: 1,
+      durationDays: 7,
+      createdAt: today.subtract(const Duration(days: 2)),
+    );
+    walk.status = 'active';
+    walk.startDate = today.subtract(const Duration(days: 2));
+    walk.endDate = walk.startDate!.add(Duration(days: walk.durationDays - 1));
+    _challenges.add(walk);
+
+    // A good day, then a day that did not happen: exactly the state the
+    // recovery flow exists for.
+    _checkIns.add(
+      _CheckIn(
+        id: _nextCheckInId++,
+        challengeId: walk.id,
+        date: today.subtract(const Duration(days: 2)),
+        status: 'completed',
+        note: 'Cold but worth it.',
+        xpEarned: xpPerCompletedCheckIn,
+        streakAfter: 1,
+        createdAt: today.subtract(const Duration(days: 2)),
+      ),
+    );
+    _checkIns.add(
+      _CheckIn(
+        id: _nextCheckInId++,
+        challengeId: walk.id,
+        date: today.subtract(const Duration(days: 1)),
+        status: 'skipped',
+        xpEarned: 0,
+        streakAfter: 0,
+        createdAt: today.subtract(const Duration(days: 1)),
+      ),
+    );
+
+    alex.xpTotal = xpPerCompletedCheckIn;
+    alex.currentStreak = 0;
+    alex.longestStreak = 1;
+
+    _xpLedger.add(
+      _XpEntry(
+        id: _nextXpId++,
+        userId: alex.id,
+        amount: xpPerCompletedCheckIn,
+        reason: 'check_in_completed',
+        challengeId: walk.id,
+        createdAt: today.subtract(const Duration(days: 2)),
+      ),
+    );
+    _badges.add(
+      _Badge(
+        id: _nextBadgeId++,
+        userId: alex.id,
+        code: 'first_checkin',
+        name: 'First step',
+        description: 'Logged your first check-in.',
+        unlockedAt: today.subtract(const Duration(days: 2)),
       ),
     );
   }

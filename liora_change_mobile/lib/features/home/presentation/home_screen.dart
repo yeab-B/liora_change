@@ -12,6 +12,7 @@ import '../../../models/challenge.dart';
 import '../../../models/dashboard.dart';
 import '../../../router/app_router.dart';
 import '../../checkins/presentation/check_in_sheet.dart';
+import '../../motivation/presentation/motivation_card.dart';
 import '../application/dashboard_controller.dart';
 import 'widgets/active_challenge_card.dart';
 import 'widgets/greeting_header.dart';
@@ -128,7 +129,11 @@ class _Dashboard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        GreetingHeader(user: dashboard.user),
+        GreetingHeader(
+          user: dashboard.user,
+          onOpenCoach: () => context.push(AppRoute.coach.path),
+          onOpenProfile: () => context.push(AppRoute.profile.path),
+        ),
         const SizedBox(height: AppSpacing.lg),
         if (dashboard.recovery.active) ...<Widget>[
           RecoveryBanner(
@@ -137,13 +142,18 @@ class _Dashboard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
         ],
-        if (challenge != null)
+        if (challenge != null) ...<Widget>[
           ActiveChallengeCard(
             challenge: challenge,
             onCheckIn: () => _openCheckIn(context, challenge),
             onOpen: () => context.push('/challenges/${challenge.id}'),
-          )
-        else
+          ),
+          const SizedBox(height: AppSpacing.md),
+          MotivationCard(
+            challengeId: challenge.id,
+            preview: dashboard.motivationPreview,
+          ),
+        ] else
           EmptyState(
             icon: Icons.eco_rounded,
             title: 'Start your first challenge',
@@ -153,8 +163,6 @@ class _Dashboard extends StatelessWidget {
             actionLabel: 'Create a challenge',
             onAction: () => context.push(AppRoute.createChallenge.path),
           ),
-        const SizedBox(height: AppSpacing.md),
-        MotivationSlot(preview: dashboard.motivationPreview),
       ],
     );
   }

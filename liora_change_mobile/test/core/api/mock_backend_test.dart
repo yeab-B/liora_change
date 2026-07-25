@@ -55,7 +55,9 @@ String _daysAgo(int days) =>
 void main() {
   late _Client client;
 
-  setUp(() => client = _Client(MockBackend()));
+  // Most of these assert absolute XP and counts, so they start from an empty
+  // account rather than the seeded demo history.
+  setUp(() => client = _Client(MockBackend(seedHistory: false)));
 
   group('auth', () {
     test('the seeded demo account can log in', () {
@@ -358,6 +360,58 @@ void main() {
         body: <String, dynamic>{'message': 'a' * 1001},
       );
       expect(response.statusCode, 422);
+    });
+  });
+
+  group('the seeded demo history', () {
+    setUp(() {
+      client = _Client(MockBackend());
+      client.loginAsDemo();
+    });
+
+    test('opens on an active challenge with recovery waiting', () {
+      final Map<String, dynamic> dashboard = client.data(
+        client.call('GET', '/dashboard'),
+      );
+
+      expect((dashboard['active_challenges'] as List<dynamic>).length, 1);
+      expect((dashboard['user'] as Map<String, dynamic>)['xp_total'], 10);
+      expect((dashboard['user'] as Map<String, dynamic>)['current_streak'], 0);
+
+      final Map<String, dynamic> recovery =
+          dashboard['recovery'] as Map<String, dynamic>;
+      expect(recovery['active'], isTrue);
+      expect(recovery['reason'], 'skipped');
+      expect(recovery['challenge_title'], 'Morning Walk');
+      expect(
+        (recovery['suggested_action'] as Map<String, dynamic>)['challenge_id'],
+        recovery['challenge_id'],
+      );
+    });
+
+    test('today is still open, so the comeback lands the same session', () {
+      final int challengeId =
+          client.data(client.call('GET', '/recovery/current'))['challenge_id']
+              as int;
+
+      final MockResponse comeback = client.call(
+        'POST',
+        '/challenges/$challengeId/check-ins',
+        body: <String, dynamic>{'status': 'completed'},
+      );
+
+      expect(comeback.statusCode, 201);
+      final Map<String, dynamic> summary =
+          client.data(comeback)['summary'] as Map<String, dynamic>;
+      expect(summary['xp_earned'], 10);
+      expect(summary['xp_total'], 20);
+      expect(summary['current_streak'], 1);
+      expect(summary['recovery_available'], isFalse);
+
+      expect(
+        client.data(client.call('GET', '/recovery/current'))['active'],
+        isFalse,
+      );
     });
   });
 }

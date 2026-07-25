@@ -9,10 +9,12 @@ import '../features/auth/presentation/splash_screen.dart';
 import '../features/challenges/presentation/challenge_detail_screen.dart';
 import '../features/challenges/presentation/challenge_list_screen.dart';
 import '../features/challenges/presentation/create_challenge_screen.dart';
+import '../features/coach/presentation/coach_chat_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/profile/presentation/profile_screen.dart';
 import '../features/recovery/presentation/recovery_screen.dart';
 import '../models/user.dart';
-import 'placeholder_screen.dart';
+import 'not_found_screen.dart';
 
 /// Entry point while the stored session is being verified.
 const String splashPath = '/';
@@ -117,9 +119,9 @@ GoRouter createRouter(Ref ref) {
             name: AppRoute.challengeDetail.name,
             builder: (BuildContext context, GoRouterState state) {
               final int? id = int.tryParse(state.pathParameters['id'] ?? '');
-              if (id == null) {
-                return PlaceholderScreen(title: AppRoute.challengeDetail.title);
-              }
+              // Only reachable from a hand-typed deep link, but it still gets
+              // a way back rather than an empty screen.
+              if (id == null) return const NotFoundScreen();
               return ChallengeDetailScreen(challengeId: id);
             },
           ),
@@ -131,8 +133,18 @@ GoRouter createRouter(Ref ref) {
         builder: (BuildContext context, GoRouterState state) =>
             const RecoveryScreen(),
       ),
-      _placeholder(AppRoute.coach),
-      _placeholder(AppRoute.profile),
+      GoRoute(
+        path: AppRoute.coach.path,
+        name: AppRoute.coach.name,
+        builder: (BuildContext context, GoRouterState state) =>
+            const CoachChatScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.profile.path,
+        name: AppRoute.profile.name,
+        builder: (BuildContext context, GoRouterState state) =>
+            const ProfileScreen(),
+      ),
     ],
   );
 
@@ -162,15 +174,6 @@ GoRoute _fade(AppRoute route, Widget child) {
         ) => FadeTransition(opacity: animation, child: child),
       );
     },
-  );
-}
-
-GoRoute _placeholder(AppRoute route) {
-  return GoRoute(
-    path: route.path,
-    name: route.name,
-    builder: (BuildContext context, GoRouterState state) =>
-        PlaceholderScreen(title: route.title),
   );
 }
 

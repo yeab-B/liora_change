@@ -12,11 +12,13 @@ import '../../../core/widgets/error_retry_view.dart';
 import '../../../core/widgets/loading_skeleton.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/progress_bar.dart';
+import '../../../core/widgets/stat_tile.dart';
 import '../../../models/challenge.dart';
 import '../../../models/challenge_category.dart';
 import '../../../models/check_in.dart';
 import '../../../models/enums.dart';
 import '../../checkins/presentation/check_in_sheet.dart';
+import '../../motivation/presentation/motivation_card.dart';
 import '../application/challenge_detail_controller.dart';
 import '../application/challenge_list_controller.dart';
 import 'widgets/challenge_badges.dart';
@@ -121,6 +123,10 @@ class _Detail extends ConsumerWidget {
         _Stats(challenge: challenge),
         const SizedBox(height: AppSpacing.md),
         _PrimaryAction(challenge: challenge),
+        if (challenge.status.isActive) ...<Widget>[
+          const SizedBox(height: AppSpacing.md),
+          MotivationCard(challengeId: challenge.id),
+        ],
         const SizedBox(height: AppSpacing.lg),
         Text('History', style: theme.textTheme.titleMedium),
         const SizedBox(height: AppSpacing.sm),
@@ -137,65 +143,35 @@ class _Stats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: _StatTile(
-            label: 'Streak',
-            value: '${challenge.currentStreak}',
-            icon: Icons.local_fire_department_rounded,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _StatTile(
-            label: 'Best',
-            value: '${challenge.longestStreak}',
-            icon: Icons.emoji_events_rounded,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _StatTile(
-            label: 'Missed',
-            value: '${challenge.missedCheckins}',
-            icon: Icons.wb_twilight_rounded,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatTile extends StatelessWidget {
-  const _StatTile({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return AppCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.md,
-      ),
-      child: Column(
+    // Intrinsic height keeps the three cards level when one label wraps.
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Icon(icon, size: 20, color: theme.colorScheme.primary),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(value, style: theme.textTheme.titleLarge),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall,
-            textAlign: TextAlign.center,
+          Expanded(
+            child: StatTile(
+              label: 'Streak',
+              value: challenge.currentStreak,
+              icon: Icons.local_fire_department_rounded,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: StatTile(
+              label: 'Best',
+              value: challenge.longestStreak,
+              icon: Icons.emoji_events_rounded,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: StatTile(
+              label: 'Missed',
+              value: challenge.missedCheckins,
+              icon: Icons.wb_twilight_rounded,
+              // A missed day is not an achievement to count up to.
+              animate: false,
+            ),
           ),
         ],
       ),

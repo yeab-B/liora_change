@@ -15,6 +15,8 @@ class PrimaryButton extends StatelessWidget {
     this.isLoading = false,
     this.icon,
     this.expand = true,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   final String label;
@@ -25,22 +27,34 @@ class PrimaryButton extends StatelessWidget {
   /// Stretch to the available width. Primary actions are usually full-width.
   final bool expand;
 
+  /// Swaps the fill for another semantic token — the check-in button uses
+  /// `success`. Anything outside the theme's tokens does not belong here.
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
+    final Color spinner = foregroundColor ?? colors.onPrimary;
 
     final Widget button = PressScale(
       builder: (BuildContext context, WidgetStatesController controller) {
         return FilledButton(
           statesController: controller,
           onPressed: isLoading ? null : onPressed,
+          style: backgroundColor == null && foregroundColor == null
+              ? null
+              : FilledButton.styleFrom(
+                  backgroundColor: backgroundColor,
+                  foregroundColor: foregroundColor,
+                ),
           child: isLoading
               ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: colors.onPrimary,
+                    color: spinner,
                   ),
                 )
               : _Label(label: label, icon: icon),

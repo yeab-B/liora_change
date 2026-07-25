@@ -104,10 +104,14 @@ class _SupportState extends ConsumerState<_Support> {
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: semantic.recovery.withValues(alpha: 0.16),
+              color: semantic.recoverySurface,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.spa_rounded, size: 40, color: semantic.recovery),
+            child: Icon(
+              Icons.spa_rounded,
+              size: 40,
+              color: semantic.onRecoverySurface,
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -176,7 +180,7 @@ class _ActionCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Icon(icon, color: semantic.recovery, size: 22),
+          Icon(icon, color: semantic.onRecoverySurface, size: 22),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(

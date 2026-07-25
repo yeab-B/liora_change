@@ -10,8 +10,8 @@ import 'package:liora_change_mobile/router/app_router.dart';
 
 import 'support/fake_api.dart';
 
-/// The placeholder screen also lists route names as navigation chips, so
-/// titles are matched inside the app bar to stay unambiguous.
+/// Screen titles can also appear in the body, so they are matched inside the
+/// app bar to stay unambiguous.
 Finder _appBarTitle(String title) {
   return find.descendant(of: find.byType(AppBar), matching: find.text(title));
 }
@@ -95,6 +95,28 @@ Future<GoRouter> _pumpSignedIn(WidgetTester tester) async {
       FakeResponse(200, <String, dynamic>{
         'data': <String, dynamic>{'active': false},
       }),
+    )
+    ..stub(
+      'GET',
+      '/progress',
+      FakeResponse(200, <String, dynamic>{
+        'data': <String, dynamic>{
+          'xp_total': 0,
+          'level': 1,
+          'current_streak': 0,
+          'longest_streak': 0,
+          'success_rate': 0,
+          'completed_checkins': 0,
+          'skipped_checkins': 0,
+          'active_challenges': 0,
+          'completed_challenges': 0,
+        },
+      }),
+    )
+    ..stub(
+      'GET',
+      '/badges/unlocked',
+      FakeResponse(200, <String, dynamic>{'data': <Map<String, dynamic>>[]}),
     );
 
   await pumpApp(tester, api, storedToken: 'stored-token');

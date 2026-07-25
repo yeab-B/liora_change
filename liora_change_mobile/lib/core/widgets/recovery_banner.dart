@@ -29,7 +29,7 @@ class RecoveryBanner extends StatelessWidget {
 
     return _GentleEntrance(
       child: AppCard(
-        color: semantic.recovery.withValues(alpha: 0.14),
+        color: semantic.recoverySurface,
         onTap: onOpen,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +45,7 @@ class RecoveryBanner extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.spa_rounded,
-                    color: semantic.recovery,
+                    color: semantic.onRecoverySurface,
                     size: 20,
                   ),
                 ),
@@ -75,7 +75,9 @@ class RecoveryBanner extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: onOpen,
-                style: TextButton.styleFrom(foregroundColor: semantic.recovery),
+                style: TextButton.styleFrom(
+                  foregroundColor: semantic.onRecoverySurface,
+                ),
                 child: Text(recovery.suggestedAction?.label ?? 'Come back in'),
               ),
             ),

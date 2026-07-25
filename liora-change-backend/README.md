@@ -1,10 +1,11 @@
 # Liora Change Backend
 
-## Hackathon docs (Backend + Mobile)
+## Hackathon docs (Backend API + Filament + Mobile)
 
 Start here: **[docs/mvp/README.md](./docs/mvp/README.md)**
 
 - API contract: [docs/mvp/05-api-contract.md](./docs/mvp/05-api-contract.md)
+- Filament admin: [docs/mvp/08-filament-admin.md](./docs/mvp/08-filament-admin.md) → panel `/liora_change`
 - Mobile quick ref: [docs/mvp/MOBILE-QUICKREF.md](./docs/mvp/MOBILE-QUICKREF.md)
 - Backend quick ref: [docs/mvp/BACKEND-QUICKREF.md](./docs/mvp/BACKEND-QUICKREF.md)
 

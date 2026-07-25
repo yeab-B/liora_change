@@ -5,8 +5,11 @@
 **JSON:** `snake_case` keys  
 **Date:** `YYYY-MM-DD` for calendar dates; ISO-8601 datetime elsewhere  
 
-This file is the **contract between Backend and Mobile**.  
+This file is the **contract between Backend API and Mobile**.  
 Do not change response shapes without updating this doc and notifying the other team.
+
+**Filament admin** is separate (session login at `/liora_change`) and manages the same DB.  
+See [08-filament-admin.md](./08-filament-admin.md). Templates/categories edited in Filament should appear in §8 API endpoints.
 
 ---
 

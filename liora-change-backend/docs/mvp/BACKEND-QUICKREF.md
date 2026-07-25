@@ -50,9 +50,22 @@ badges: first_checkin, streak_3, comeback
 | `StoreChallengeRequest` | prefer field `difficulty` (alias `difficulty_score` OK) |
 | Postman Stage 1–5 | replace paths with contract; keep as smoke tests |
 
+## Filament admin (MUST — do not forget)
+
+| Item | Value |
+|------|-------|
+| URL | `/liora_change` |
+| Seed admin | `admin@liora.change` / `password` |
+| MUST resources | Users, Categories, Templates |
+| Already in repo | `UserResource`, `RoleResource`, `ChallengeResource`, `ChallengeCategoryResource`, `ChallengeTemplateResource`, `FeaturedChallengeResource` |
+| Full doc | [08-filament-admin.md](./08-filament-admin.md) |
+
+Filament writes same DB as API. Show it in the demo after the mobile flow.
+
 ## Do not build for hackathon
 
-Voice · RAG/Qdrant · risk ML · social partners · FAL images · full i18n
+Voice · RAG/Qdrant · risk ML · social partners · FAL images · full i18n  
+(Do **not** cut Filament — it is in scope.)
 
 ## Freeze
 

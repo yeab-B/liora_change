@@ -48,7 +48,15 @@ Use this as the joint Backend + Mobile go/no-go list.
 
 ---
 
-## E. Demo rehearsal (3 minutes)
+## E. Filament admin (MUST)
+
+- [ ] `/liora_change` loads and admin can log in (`admin@liora.change`)
+- [ ] Users list shows demo/mobile members
+- [ ] Categories can be viewed/created
+- [ ] Templates can be viewed/created
+- [ ] Template/category data is what API/mobile can consume (same DB)
+
+## F. Demo rehearsal (3–4 minutes)
 
 - [ ] Cold start → login as demo user **or** register live
 - [ ] Create “Morning Walk”
@@ -56,11 +64,12 @@ Use this as the joint Backend + Mobile go/no-go list.
 - [ ] Show streak/XP on Home
 - [ ] Skip / show recovery message
 - [ ] Complete again → comeback
-- [ ] Say punchline: *Trackers punish failure. Liora helps you recover.*
+- [ ] Open Filament → show Templates / Categories / Users
+- [ ] Say punchline: *Trackers punish failure. Liora helps you recover — admins curate the challenges.*
 
 ---
 
-## F. Known issues log
+## G. Known issues log
 
 | Issue | Owner | Workaround for demo | Fixed? |
 |-------|-------|---------------------|--------|
@@ -68,7 +77,7 @@ Use this as the joint Backend + Mobile go/no-go list.
 
 ---
 
-## G. Freeze rule
+## H. Freeze rule
 
 **T-60 minutes before judging:** API shape freeze.  
 Only bugfixes allowed. No new fields unless demo is blocked.

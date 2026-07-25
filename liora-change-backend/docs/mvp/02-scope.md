@@ -13,7 +13,7 @@
 - Recovery banner after miss/skip  
 - Basic profile (name, timezone optional)
 
-### Backend
+### Backend API
 - Sanctum auth  
 - Challenges CRUD (minimum: create, list, show, activate)  
 - Check-ins  
@@ -21,7 +21,17 @@
 - Dashboard aggregate endpoint  
 - Recovery current endpoint  
 - Consistent JSON error format  
-- Seed data: 3–5 challenge templates/categories (optional but helpful)
+- Seed data: demo member + admin + templates/categories  
+
+### Backend Admin — Filament (MVP-MUST)
+- Filament panel live at `/liora_change`  
+- Admin login (seeded `admin@liora.change`)  
+- Manage **Users**  
+- Manage **Challenge Categories**  
+- Manage **Challenge Templates**  
+- (Existing resources in repo — wire/seed for demo; see [08-filament-admin.md](./08-filament-admin.md))  
+
+Filament and API share the **same MySQL** data. Mobile never calls Filament directly.
 
 ### Demo-only AI (MVP-NICE)
 - `POST /ai/motivation` returns personalized text  
@@ -32,10 +42,10 @@
 
 ## Nice if time (MVP-NICE)
 
-- Challenge templates list from API  
+- Challenge templates list from API (`GET /challenge-templates`) consumed by mobile  
 - Badges unlocked list  
 - Daily reward claim  
-- Filament admin: categories + templates  
+- Filament: Challenges list, Featured challenges, simple widgets  
 - Calendar heatmap endpoint  
 - Forgot password  
 
@@ -82,5 +92,6 @@ Mobile may call activate directly from draft if backend allows
 |------|------------|
 | API | All MVP-MUST endpoints in [05-api-contract.md](./05-api-contract.md) return correct shapes |
 | Mobile | Happy path demo story works on a device/emulator against staging/local API |
-| Data | Seeded demo user + sample challenge available |
+| Filament | Admin can log in and manage categories + templates (+ see users) |
+| Data | Seeded demo member + admin + sample templates available |
 | Docs | Any new field added to API is updated in the contract same day |

@@ -40,9 +40,10 @@ Use this exact story for judges:
 5. **Skip tomorrow** (or simulate miss) → streak resets, recovery message appears  
 6. **Recover:** check in again + show encouraging message  
 7. **Dashboard:** progress %, streak, XP, recent activity  
+8. **(Backend) Filament admin:** open `/liora_change` → show Categories / Templates / Users  
 
 **Punchline:**  
-> “Trackers punish failure. Liora helps you recover and continue.”
+> “Trackers punish failure. Liora helps you recover and continue — and admins curate the challenges behind the app.”
 
 ---
 
@@ -68,4 +69,5 @@ Demo is successful if a judge can see:
 - [ ] Check-in updates streak/progress  
 - [ ] Skip/miss triggers recovery UI (not only “streak lost”)  
 - [ ] Dashboard shows progress + XP  
+- [ ] Filament admin works (login + templates/categories)  
 - [ ] Backend and mobile used the **same API contract**

@@ -17,6 +17,7 @@
 | 5 | [API Contract](./05-api-contract.md) | **Backend + Mobile (main contract)** |
 | 6 | [Data Model](./06-data-model.md) | Backend (Mobile: read fields) |
 | 7 | [Integration Checklist](./07-integration-checklist.md) | Everyone before demo |
+| 8 | [Filament Admin](./08-filament-admin.md) | **Backend (+ demo pitch)** |
 | — | [Mobile Quick Ref](./MOBILE-QUICKREF.md) | Mobile pin |
 | — | [Backend Quick Ref](./BACKEND-QUICKREF.md) | Backend pin |
 
@@ -26,7 +27,7 @@ Long-term architecture notes (optional, not required for hackathon): [`../archit
 
 ## Demo promise (one sentence)
 
-A user can **sign up → create a challenge → check in daily → see streak/XP → get a recovery nudge after a miss** — proving we help people change behavior, not only tick checkboxes.
+A user can **sign up → create a challenge → check in daily → see streak/XP → get a recovery nudge after a miss**, while **admins manage templates/categories in Filament** — proving we help people change behavior, not only tick checkboxes.
 
 ---
 
@@ -36,8 +37,8 @@ A user can **sign up → create a challenge → check in daily → see streak/XP
 |-------|------|
 | Mobile | Flutter + Riverpod + GoRouter + Dio |
 | API | Laravel 12 + Sanctum + `/api/v1` |
+| Admin | **Filament v4** panel at `/liora_change` (MUST for backend demo) |
 | DB | MySQL |
-| Admin (nice-to-have) | Filament templates/categories |
 | AI (optional stub) | Simple motivation endpoint (can be mock/template) |
 
 ---

@@ -20,6 +20,7 @@
 | Dashboard | Owns aggregation | Owns widgets |
 | Recovery | Owns when recovery is “active” | Owns banner + CTA |
 | Motivation AI stub | Owns endpoint (template or LLM) | Owns card UI |
+| **Filament admin** | **Owns panel `/liora_change`, users, categories, templates** | Does not use Filament; may list templates via API |
 | Validation errors | Returns standard 422 | Shows field errors |
 | Offline | — | Optional Hive cache (nice) |
 | Push notifications | LATER | LATER |
@@ -33,7 +34,7 @@
 |---------|--------|
 | Auth endpoints live | Auth screens + Dio client + token |
 | Challenge create/list | Challenge create form + list UI |
-| Seed demo user | Navigation shell (GoRouter) |
+| Seed demo **member + admin**; confirm Filament login | Navigation shell (GoRouter) |
 
 ### Hour 2–5
 | Backend | Mobile |
@@ -47,6 +48,7 @@
 |---------|--------|
 | Recovery endpoint | Recovery banner |
 | Motivation stub | Motivation card |
+| Filament: categories + templates demo-ready | Optional: pick from templates API |
 | Fix contract mismatches | Wire loading/error states |
 
 ### Hour 7–end
@@ -72,11 +74,13 @@
 ## Backend conventions
 
 - Prefix: `/api/v1`  
-- Auth: Laravel Sanctum personal access tokens  
+- Auth: Laravel Sanctum personal access tokens **for mobile**  
+- Admin: Filament session auth at `/liora_change` (**not** Sanctum for panel login)  
 - Resources: consistent JSON keys (`snake_case`)  
 - Pagination: Laravel default (`data`, `links`, `meta`) where lists are long  
 - MVP lists may return plain `data: []` without pagination if small  
 - Business errors: `422` with machine `code` when useful  
+- Filament resources and API must use the **same** models/tables  
 
 ---
 
@@ -84,7 +88,8 @@
 
 | Email | Password | Purpose |
 |-------|----------|---------|
-| `demo@liora.change` | `password` | Judge demo |
+| `admin@liora.change` | `password` | **Filament admin demo** |
+| `demo@liora.change` | `password` | Mobile / judge demo (member) |
 | `mobile@liora.change` | `password` | Mobile QA |
 
 Backend should seed these.

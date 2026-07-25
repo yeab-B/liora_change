@@ -4,7 +4,7 @@
 
 👉 **[docs/mvp/README.md](./docs/mvp/README.md)**
 
-Shared communication pack for **Backend + Mobile**:
+Shared communication pack for **Backend + Mobile + Filament admin**:
 
 1. Problem → Solution → Demo  
 2. Scope (in/out)  
@@ -13,6 +13,7 @@ Shared communication pack for **Backend + Mobile**:
 5. **API contract** (main handoff)  
 6. Data model  
 7. Integration checklist  
+8. **Filament admin** (`/liora_change`)
 
 ---
 

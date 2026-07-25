@@ -2,7 +2,9 @@
 
 ## Hackathon docs (Backend API + Filament + Mobile)
 
-Start here: **[docs/mvp/README.md](./docs/mvp/README.md)**
+**New to the project? Read this first:** **[docs/mvp/00-PROJECT-BRIEF.md](./docs/mvp/00-PROJECT-BRIEF.md)** — one prompt explaining the whole project.
+
+Full index: **[docs/mvp/README.md](./docs/mvp/README.md)**
 
 ### Give each team their file
 

@@ -6,6 +6,12 @@
 
 ---
 
+## 🧭 New teammate? Start here, not below.
+
+**[00-PROJECT-BRIEF.md](./00-PROJECT-BRIEF.md)** — one prompt explaining the whole project (problem, solution, scope, demo story). Read/share this **before** touching any issue or writing any code. It's also the first message to paste into any AI agent you use.
+
+---
+
 ## Team guides (detailed — use these to build & integrate)
 
 | Team | Start here |

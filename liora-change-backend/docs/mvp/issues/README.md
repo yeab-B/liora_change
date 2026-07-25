@@ -4,6 +4,8 @@
 **Base branch:** `main`  
 **Rule:** Every issue must ship **working API endpoints + passing tests**. "Done" = curl/Postman proves it, and `php artisan test` proves it.
 
+> **Before you start:** read [../00-PROJECT-BRIEF.md](../00-PROJECT-BRIEF.md) first — it explains what the whole project is for. Then read [../teams/BACKEND-TEAM-GUIDE.md](../teams/BACKEND-TEAM-GUIDE.md), then come back here for your specific issue.
+
 Each issue file below is **copy-paste ready** for a GitHub Issue (title + body), and ends with a **🤖 AI Development Prompt** you can paste directly into Cursor/agent chat to build it.
 
 ---

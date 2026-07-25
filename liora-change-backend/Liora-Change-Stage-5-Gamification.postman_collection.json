@@ -1,0 +1,67 @@
+{
+  "info": {
+    "name": "Liora-Change-Stage-5-Gamification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Gamification API",
+      "item": [
+        {
+          "name": "Get XP History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/xp/history",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "xp", "history"]
+            }
+          }
+        },
+        {
+          "name": "Get Unlocked Badges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/badges/unlocked",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "badges", "unlocked"]
+            }
+          }
+        },
+        {
+          "name": "Claim Daily Reward",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/rewards/daily/claim",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "rewards", "daily", "claim"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -3,15 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ChallengeTemplateResource\Pages;
-use App\Filament\Resources\ChallengeTemplateResource\RelationManagers;
 use App\Models\ChallengeTemplate;
+use App\Shared\Enums\ChallengeDifficulty;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class ChallengeTemplateResource extends Resource
 {
@@ -19,27 +18,33 @@ class ChallengeTemplateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Challenges';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                    ->required(),
-                Forms\Components\TextInput::make('slug')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('category_id'),
-                Forms\Components\TextInput::make('difficulty_score')
+                Forms\Components\Select::make('difficulty')
+                    ->options(collect(ChallengeDifficulty::cases())
+                        ->mapWithKeys(fn (ChallengeDifficulty $case) => [$case->value => Str::headline($case->value)])
+                        ->all())
+                    ->default(ChallengeDifficulty::Beginner->value)
                     ->required(),
                 Forms\Components\TextInput::make('duration_days')
-                    ->numeric(),
-                Forms\Components\Textarea::make('suggested_daily_actions')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('completion_criteria')
-                    ->columnSpanFull(),
-                Forms\Components\Toggle::make('is_official')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(90)
+                    ->default(7)
                     ->required(),
+                Forms\Components\Select::make('category_id')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload(),
             ]);
     }
 
@@ -47,31 +52,18 @@ class ChallengeTemplateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('category_id')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('difficulty_score')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Category')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('difficulty')
+                    ->badge()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('duration_days')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_official')
-                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

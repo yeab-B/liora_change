@@ -50,6 +50,15 @@ class Challenge extends Model
     }
 
     /**
+     * The curated category this challenge falls under, if any (added by
+     * Issue #3, which also adds the real FK constraint on `category_id`).
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ChallengeCategory::class);
+    }
+
+    /**
      * Declared ahead of Issue #4 (Check-ins API), which creates the CheckIn
      * model/table. Safe to declare now: PHP only resolves `CheckIn::class`
      * when this method is actually invoked, not when the class is loaded.

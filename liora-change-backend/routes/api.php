@@ -5,7 +5,10 @@ use App\Http\Controllers\Api\V1\ChallengeCategoryController;
 use App\Http\Controllers\Api\V1\ChallengeController;
 use App\Http\Controllers\Api\V1\ChallengeTemplateController;
 use App\Http\Controllers\Api\V1\CheckInController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\MeController;
+use App\Http\Controllers\Api\V1\ProgressController;
+use App\Http\Controllers\Api\V1\RecoveryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,5 +34,9 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/challenge-categories', [ChallengeCategoryController::class, 'index']);
         Route::get('/challenge-templates', [ChallengeTemplateController::class, 'index']);
+
+        Route::get('/dashboard', [DashboardController::class, 'show']);
+        Route::get('/recovery/current', [RecoveryController::class, 'current']);
+        Route::get('/progress', [ProgressController::class, 'show']);
     });
 });

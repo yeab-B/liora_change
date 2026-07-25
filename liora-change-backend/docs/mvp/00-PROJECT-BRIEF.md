@@ -73,13 +73,19 @@ HOW THE DOCS ARE ORGANIZED (so you know where to look)
 - docs/mvp/teams/SHARED-DATA-CONTRACT.md    → THE frozen schema both teams must match
 - docs/mvp/teams/BACKEND-TEAM-GUIDE.md      → full backend build handbook
 - docs/mvp/teams/MOBILE-TEAM-GUIDE.md       → full mobile build handbook
-- docs/mvp/issues/README.md                 → the 9 GitHub issues (3 backend devs × 3 each),
+- docs/mvp/issues/README.md                 → the 9 backend GitHub issues (3 devs × 3 each),
                                                 each with a full spec + a ready AI build prompt
+- docs/mvp/mobile-issues/README.md          → the 10 mobile GitHub issues (one per major screen),
+                                                each with UI/UX criteria + a ready AI build prompt
+- docs/mvp/mobile-issues/00-design-system.md → the calm-green visual language every mobile
+                                                screen must follow (colors, type, components)
 
 HOW WE WORK
 - Backend: 3 developers, 9 issues total (3 each), one git branch per issue, PRs into `main`.
   Full breakdown, branch names, and merge order: docs/mvp/issues/README.md
-- Mobile: builds against docs/mvp/teams/MOBILE-TEAM-GUIDE.md and the same shared contract.
+- Mobile: 10 issues total, one git branch per issue, PRs into `main`. Full breakdown, the shared
+  design system, and merge order: docs/mvp/mobile-issues/README.md. Also read
+  docs/mvp/teams/MOBILE-TEAM-GUIDE.md and the same shared contract.
 - Every endpoint must return the exact JSON shape from SHARED-DATA-CONTRACT.md.
 - Every backend issue ships with automated tests — "done" means tests pass AND a manual
   curl/Postman check succeeds, not just "the code compiles."
@@ -106,9 +112,10 @@ YOUR JOB RIGHT NOW
    docs/mvp/issues/README.md, find your assigned issue number, read that issue file completely,
    create your branch, and use the 🤖 AI Development Prompt at the bottom of that issue file to
    start building.
-3. If you are Mobile: read docs/mvp/teams/MOBILE-TEAM-GUIDE.md and
-   docs/mvp/teams/SHARED-DATA-CONTRACT.md, then build screen-by-screen following
-   docs/mvp/04-user-flows.md.
+3. If you are Mobile: read docs/mvp/teams/MOBILE-TEAM-GUIDE.md,
+   docs/mvp/teams/SHARED-DATA-CONTRACT.md, and docs/mvp/mobile-issues/00-design-system.md, then
+   go to docs/mvp/mobile-issues/README.md, pick your issue, and use the 🤖 AI Development Prompt
+   at the bottom of that issue file to start building.
 4. Do not invent new field names, new endpoints, or skip the recovery/AI features — they are the
    whole point of this product, not optional polish.
 

@@ -3,6 +3,7 @@
 Print / pin this.  
 **Full mobile handbook:** [teams/MOBILE-TEAM-GUIDE.md](./teams/MOBILE-TEAM-GUIDE.md)  
 **Schemas (same as backend):** [teams/SHARED-DATA-CONTRACT.md](./teams/SHARED-DATA-CONTRACT.md)  
+**Your 10 GitHub issues + design system:** [mobile-issues/README.md](./mobile-issues/README.md)  
 API examples: [05-api-contract.md](./05-api-contract.md)
 
 ## Config

@@ -26,6 +26,12 @@
 Ready-to-paste GitHub issues with branch names, full specs, testing requirements, and an
 🤖 AI build prompt for each: **[issues/README.md](./issues/README.md)**
 
+## Mobile GitHub Issues (10 issues, Flutter)
+
+Ready-to-paste GitHub issues covering every screen, with a shared calm-green design system,
+UI/UX criteria (color consistency, responsiveness, interactivity), testing requirements, and an
+🤖 AI build prompt for each: **[mobile-issues/README.md](./mobile-issues/README.md)**
+
 ---
 
 ## Start here (read in order)

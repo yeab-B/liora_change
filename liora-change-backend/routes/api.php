@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\BadgeController;
 use App\Http\Controllers\Api\V1\ChallengeCategoryController;
 use App\Http\Controllers\Api\V1\ChallengeController;
 use App\Http\Controllers\Api\V1\ChallengeTemplateController;
+use App\Http\Controllers\Api\V1\ChatController;
 use App\Http\Controllers\Api\V1\CheckInController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\MeController;
@@ -48,5 +49,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/rewards/daily/claim', [RewardController::class, 'claimDaily']);
 
         Route::post('/ai/motivation', [MotivationController::class, 'generate']);
+
+        Route::post('/ai/chat', [ChatController::class, 'send']);
+        Route::get('/ai/chat/sessions', [ChatController::class, 'sessions']);
+        Route::get('/ai/chat/sessions/{session}/messages', [ChatController::class, 'messages']);
     });
 });

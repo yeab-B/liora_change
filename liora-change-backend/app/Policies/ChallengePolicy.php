@@ -18,10 +18,13 @@ class ChallengePolicy
 
     /**
      * Determine whether the user can view the model.
+     *
+     * MVP rule: a member may only view their own challenges
+     * (docs/mvp/issues/02-challenges-api.md).
      */
     public function view(User $user, Challenge $challenge): bool
     {
-        return false;
+        return $user->id === $challenge->user_id;
     }
 
     /**
@@ -34,10 +37,12 @@ class ChallengePolicy
 
     /**
      * Determine whether the user can update the model.
+     *
+     * Also gates status-changing actions like `activate` for the MVP API.
      */
     public function update(User $user, Challenge $challenge): bool
     {
-        return false;
+        return $user->id === $challenge->user_id;
     }
 
     /**

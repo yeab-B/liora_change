@@ -1,0 +1,102 @@
+# 02 — MVP Scope (In / Out)
+
+## In scope (MVP-MUST)
+
+### Mobile
+- Register / Login / Logout  
+- Home dashboard  
+- Create challenge (simple form)  
+- Challenge list + detail  
+- Activate challenge  
+- Daily check-in (complete / skip)  
+- Streak + XP display  
+- Recovery banner after miss/skip  
+- Basic profile (name, timezone optional)  
+- **AI Motivation button** (text from challenge via API)  
+- **AI Coach chatbot screen** (simple RAG chat)
+
+### Backend API
+- Sanctum auth  
+- Challenges CRUD (minimum: create, list, show, activate)  
+- Check-ins  
+- Progress / streak / XP calculation  
+- Dashboard aggregate endpoint  
+- Recovery current endpoint  
+- Consistent JSON error format  
+- Seed data: demo member + admin + templates/categories  
+- **`POST /ai/motivation`** — OpenAI text based on user’s challenge (+ template fallback)  
+- **`POST /ai/chat`** — simple RAG chatbot (MySQL knowledge chunks + OpenAI)  
+- Seed knowledge articles/chunks for RAG  
+
+### Backend Admin — Filament (MVP-MUST)
+- Filament panel live at `/liora_change`  
+- Admin login (seeded `admin@liora.change`)  
+- Manage **Users**  
+- Manage **Challenge Categories**  
+- Manage **Challenge Templates**  
+- Manage **Knowledge Articles** (for simple RAG)  
+- (Existing resources in repo — wire/seed for demo; see [08-filament-admin.md](./08-filament-admin.md))  
+
+Filament and API share the **same MySQL** data. Mobile never calls Filament directly.
+
+AI details: [09-simple-ai-rag-chat.md](./09-simple-ai-rag-chat.md)
+
+---
+
+## Nice if time (MVP-NICE)
+
+- Challenge templates list from API (`GET /challenge-templates`) consumed by mobile  
+- Chat session history endpoints  
+- Badges unlocked list  
+- Daily reward claim  
+- Filament: Challenges list, Featured challenges, simple widgets  
+- Calendar heatmap endpoint  
+- Forgot password  
+- Embedding-based retrieval (upgrade from keyword RAG)
+
+---
+
+## Out of scope (LATER — do not build for hackathon)
+
+| Cut | Why |
+|-----|-----|
+| Full vector DB (Qdrant/Pinecone) | Use simple MySQL RAG for MVP |
+| Voice STT/TTS | Integration risk |
+| Risk prediction ML | Not needed to prove loop |
+| Social accountability partners | Scope explosion |
+| Certificates / image generation | Polish, not core |
+| Multi-language full i18n | English OK for demo (Amharic later) |
+| Complex subscription billing | Not needed |
+| Microservices | Modular Laravel only |
+
+---
+
+## Challenge status machine (keep simple)
+
+```text
+draft → ready → active ⇄ paused → completed
+                      ↘ cancelled / archived
+```
+
+**Hackathon minimum path:**
+
+```text
+draft → active → (completed optional)
+```
+
+Mobile may call activate directly from draft if backend allows  
+`draft → active` (recommended for speed).
+
+**Backend decision for MVP:** allow `draft → active` directly.
+
+---
+
+## Definition of Done (joint)
+
+| Area | Done means |
+|------|------------|
+| API | All MVP-MUST endpoints in [05-api-contract.md](./05-api-contract.md) return correct shapes |
+| Mobile | Happy path demo story works on a device/emulator against staging/local API |
+| Filament | Admin can log in and manage categories + templates (+ see users) |
+| Data | Seeded demo member + admin + sample templates available |
+| Docs | Any new field added to API is updated in the contract same day |

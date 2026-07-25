@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAI (AI Motivation / Chat)
+    |--------------------------------------------------------------------------
+    |
+    | Optional for the MVP: when 'key' is empty, App\Services\Ai\OpenAiClient
+    | never calls out to OpenAI and callers fall back to static templates.
+    |
+    */
+
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+    ],
+
 ];

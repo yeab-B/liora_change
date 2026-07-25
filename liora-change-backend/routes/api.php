@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\ChallengeTemplateController;
 use App\Http\Controllers\Api\V1\CheckInController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\MeController;
+use App\Http\Controllers\Api\V1\MotivationController;
 use App\Http\Controllers\Api\V1\ProgressController;
 use App\Http\Controllers\Api\V1\RecoveryController;
 use App\Http\Controllers\Api\V1\RewardController;
@@ -45,5 +46,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/xp/history', [XpController::class, 'history']);
         Route::get('/badges/unlocked', [BadgeController::class, 'unlocked']);
         Route::post('/rewards/daily/claim', [RewardController::class, 'claimDaily']);
+
+        Route::post('/ai/motivation', [MotivationController::class, 'generate']);
     });
 });

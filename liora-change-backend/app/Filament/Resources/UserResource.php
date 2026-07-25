@@ -42,18 +42,34 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('xp_total')
+                    ->label('XP')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('level')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('current_streak')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('longest_streak')
+                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -64,7 +80,12 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('has_active_challenge')
+                    ->label('Has active challenge')
+                    ->query(fn (Builder $query): Builder => $query->whereHas(
+                        'challenges',
+                        fn (Builder $challenges) => $challenges->where('status', 'active')
+                    )),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

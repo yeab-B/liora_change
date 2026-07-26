@@ -1,3 +1,4 @@
+import 'package:liora_change_mobile/core/ai/gemini_coach_client.dart';
 import 'package:liora_change_mobile/features/motivation/data/motivation_repository.dart';
 import 'package:liora_change_mobile/models/enums.dart';
 import 'package:liora_change_mobile/models/motivation.dart';
@@ -5,6 +6,9 @@ import 'package:liora_change_mobile/models/motivation.dart';
 /// In-memory stand-in for `POST /ai/motivation`.
 class FakeMotivationRepository implements MotivationRepository {
   FakeMotivationRepository({this.messages = const <String>['Keep walking.']});
+
+  @override
+  GeminiCoachClient? get gemini => null;
 
   /// Handed out in order, so a regenerate returns something new.
   List<String> messages;
@@ -19,6 +23,7 @@ class FakeMotivationRepository implements MotivationRepository {
   Future<Motivation> getMotivation({
     required int challengeId,
     MotivationContext? context,
+    String? challengeTitle,
   }) async {
     requests.add(<String, Object?>{
       'challenge_id': challengeId,

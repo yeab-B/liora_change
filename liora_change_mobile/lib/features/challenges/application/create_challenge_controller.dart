@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../models/challenge.dart';
 import '../../../models/challenge_template.dart';
+import '../../home/application/dashboard_controller.dart';
 import '../data/challenge_repository.dart';
 import 'challenge_list_controller.dart';
 
@@ -86,15 +87,24 @@ class CreateChallengeController extends Notifier<CreateChallengeState> {
     state = state.copyWith(submission: const AsyncValue<Challenge?>.loading());
 
     final AsyncValue<Challenge?> result = await AsyncValue.guard<Challenge?>(
-      () => ref
-          .read(challengeRepositoryProvider)
-          .createChallenge(
-            title: state.isCustom ? state.customTitle.trim() : template!.title,
-            description: state.isCustom ? null : template!.description,
-            difficulty: state.isCustom ? null : template!.difficulty,
-            durationDays: state.isCustom ? null : template!.durationDays,
-            categoryId: state.categoryId,
-          ),
+      () async {
+        final Challenge created = await ref
+            .read(challengeRepositoryProvider)
+            .createChallenge(
+              title: state.isCustom
+                  ? state.customTitle.trim()
+                  : template!.title,
+              description: state.isCustom ? null : template!.description,
+              difficulty: state.isCustom ? null : template!.difficulty,
+              durationDays: state.isCustom ? null : template!.durationDays,
+              categoryId: state.categoryId,
+            );
+        // Activate immediately so Home can lead with it — create alone leaves
+        // a draft that the dashboard ignores.
+        return ref
+            .read(challengeRepositoryProvider)
+            .activateChallenge(created.id);
+      },
     );
 
     state = state.copyWith(submission: result);
@@ -102,6 +112,7 @@ class CreateChallengeController extends Notifier<CreateChallengeState> {
     if (result.hasError) return null;
 
     ref.invalidate(challengeListControllerProvider);
+    ref.invalidate(dashboardControllerProvider);
     return result.value;
   }
 }

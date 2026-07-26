@@ -1,8 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/animated_count.dart';
 import '../../../../core/widgets/streak_badge.dart';
+import '../../../../models/challenge.dart';
 import '../../../../models/dashboard.dart';
 
 /// Time-of-day greeting, level/XP line, and the streak — the "how am I doing"
@@ -11,17 +14,31 @@ class GreetingHeader extends StatelessWidget {
   const GreetingHeader({
     super.key,
     required this.user,
+    this.activeChallenges = const <Challenge>[],
     this.onOpenCoach,
     this.onOpenProfile,
   });
 
   final DashboardUser user;
 
+  /// Used so the flame reflects the best live challenge streak, not a stale
+  /// user counter that the real API may leave at zero.
+  final List<Challenge> activeChallenges;
+
   /// Home's way into the coach; omitted, the button is not rendered.
   final VoidCallback? onOpenCoach;
 
   /// Home's way into the profile; omitted, the avatar is not rendered.
   final VoidCallback? onOpenProfile;
+
+  int get _displayStreak {
+    if (activeChallenges.isEmpty) return user.currentStreak;
+    final int best = activeChallenges.fold<int>(
+      0,
+      (int maxSoFar, Challenge c) => math.max(maxSoFar, c.currentStreak),
+    );
+    return math.max(best, user.currentStreak);
+  }
 
   static String greetingFor(DateTime time) {
     if (time.hour < 12) return 'Good morning';
@@ -41,7 +58,7 @@ class GreetingHeader extends StatelessWidget {
       children: <Widget>[
         Row(
           children: <Widget>[
-            AnimatedStreakBadge(streak: user.currentStreak),
+            AnimatedStreakBadge(streak: _displayStreak),
             const Spacer(),
             if (onOpenCoach != null)
               IconButton(

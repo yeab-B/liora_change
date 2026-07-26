@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:liora_change_mobile/core/ai/demo_coach_service.dart';
 import 'package:liora_change_mobile/features/coach/data/chat_repository.dart';
 import 'package:liora_change_mobile/models/chat_message.dart';
 import 'package:liora_change_mobile/models/chat_reply.dart';
@@ -11,6 +14,9 @@ class FakeChatRepository implements ChatRepository {
     this.answers = const <String>['Start smaller than feels impressive.'],
     this.sources = const <ChatSource>[],
   });
+
+  @override
+  DemoCoachService? get demoCoach => null;
 
   /// Handed out in order, one per successful send.
   List<String> answers;
@@ -27,11 +33,13 @@ class FakeChatRepository implements ChatRepository {
     required String message,
     int? sessionId,
     int? challengeId,
+    List<ChatMessage> history = const <ChatMessage>[],
   }) async {
     requests.add(<String, Object?>{
       'message': message,
       'session_id': sessionId,
       'challenge_id': challengeId,
+      'history_length': history.length,
     });
     final int index = calls++;
     if (delay != null) await Future<void>.delayed(delay!);
@@ -45,6 +53,30 @@ class FakeChatRepository implements ChatRepository {
         role: ChatRole.assistant,
         content: answers[index % answers.length],
         sources: sources,
+      ),
+    );
+  }
+
+  @override
+  Future<({ChatReply reply, String? transcript, bool speakAloud})> sendAudio(
+    Uint8List wavBytes, {
+    int? sessionId,
+  }) async {
+    calls++;
+    if (delay != null) await Future<void>.delayed(delay!);
+    if (error != null) throw error!;
+    return (
+      transcript: 'Voice note',
+      speakAloud: false,
+      reply: ChatReply(
+        sessionId: sessionId ?? this.sessionId,
+        message: ChatMessage(
+          id: 200 + calls,
+          sessionId: sessionId ?? this.sessionId,
+          role: ChatRole.assistant,
+          content: answers.first,
+          sources: sources,
+        ),
       ),
     );
   }

@@ -8,12 +8,24 @@ import '../theme/app_spacing.dart';
 /// left with its own mark and, when the answer was grounded in the knowledge
 /// base, the articles it leaned on.
 class ChatBubble extends StatelessWidget {
-  const ChatBubble({super.key, required this.message, this.onRetry});
+  const ChatBubble({
+    super.key,
+    required this.message,
+    this.onRetry,
+    this.onSpeak,
+    this.isSpeaking = false,
+    this.isSpeakLoading = false,
+  });
 
   final ChatMessage message;
 
   /// Called from the inline affordance when a message never made it out.
   final VoidCallback? onRetry;
+
+  /// Addis AI TTS for coach replies (Amharic when the text is Ethiopic).
+  final VoidCallback? onSpeak;
+  final bool isSpeaking;
+  final bool isSpeakLoading;
 
   /// Long answers stay readable instead of running the full width.
   static const double maxWidthFraction = 0.78;
@@ -77,6 +89,29 @@ class ChatBubble extends StatelessWidget {
                     : CrossAxisAlignment.start,
                 children: <Widget>[
                   bubble,
+                  if (!fromUser && onSpeak != null)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: onSpeak,
+                        tooltip: isSpeaking ? 'Stop' : 'Listen',
+                        icon: isSpeakLoading
+                            ? SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              )
+                            : Icon(
+                                isSpeaking
+                                    ? Icons.stop_circle_outlined
+                                    : Icons.volume_up_rounded,
+                                color: theme.colorScheme.primary,
+                              ),
+                      ),
+                    ),
                   if (message.sources.isNotEmpty)
                     _Sources(sources: message.sources),
                   if (message.delivery == MessageDelivery.failed)

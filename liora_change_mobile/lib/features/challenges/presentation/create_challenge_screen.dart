@@ -13,6 +13,7 @@ import '../../../core/widgets/primary_button.dart';
 import '../../../models/challenge.dart';
 import '../../../models/challenge_category.dart';
 import '../../../models/challenge_template.dart';
+import '../../../router/app_router.dart';
 import '../application/challenge_list_controller.dart';
 import '../application/create_challenge_controller.dart';
 import 'widgets/challenge_badges.dart';
@@ -64,7 +65,7 @@ class _CreateChallengeScreenState extends ConsumerState<CreateChallengeScreen> {
     }
 
     AppSnackbar.showSuccess(context, '${created.title} is ready to start.');
-    context.pushReplacement('/challenges/${created.id}');
+    context.go(AppRoute.home.path);
   }
 
   @override

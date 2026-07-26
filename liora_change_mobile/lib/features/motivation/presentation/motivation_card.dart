@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/demo_ai_config.dart';
+import '../../../core/services/addis_voice_service.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/loading_skeleton.dart';
@@ -61,6 +63,7 @@ class MotivationCard extends ConsumerWidget {
           _Header(
             canRegenerate: motivation != null && !busy,
             onRegenerate: generate,
+            speakText: message,
           ),
           const SizedBox(height: AppSpacing.xs),
           AnimatedSize(
@@ -104,16 +107,31 @@ class MotivationCard extends ConsumerWidget {
 
 /// The icon keeps its space whatever the state, so the card does not twitch
 /// while a new message is being written.
-class _Header extends StatelessWidget {
-  const _Header({required this.canRegenerate, required this.onRegenerate});
+class _Header extends ConsumerWidget {
+  const _Header({
+    required this.canRegenerate,
+    required this.onRegenerate,
+    this.speakText,
+  });
 
   final bool canRegenerate;
   final VoidCallback onRegenerate;
+  final String? speakText;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
     final Color accent = theme.colorScheme.onPrimaryContainer;
+    final AddisVoiceStatus voice = ref.watch(addisVoiceProvider);
+    final bool canSpeak =
+        DemoAiConfig.addisEnabled &&
+        speakText != null &&
+        speakText!.trim().isNotEmpty;
+    final bool speakingThis =
+        canSpeak &&
+        voice.currentText == speakText &&
+        (voice.state == AddisVoiceState.playing ||
+            voice.state == AddisVoiceState.loading);
 
     return Row(
       children: <Widget>[
@@ -125,6 +143,19 @@ class _Header extends StatelessWidget {
             style: theme.textTheme.titleMedium?.copyWith(color: accent),
           ),
         ),
+        if (canSpeak)
+          IconButton(
+            onPressed: () =>
+                ref.read(addisVoiceProvider.notifier).play(speakText!),
+            iconSize: 20,
+            visualDensity: VisualDensity.compact,
+            tooltip: speakingThis ? 'Stop' : 'Listen',
+            icon: Icon(
+              speakingThis && voice.state == AddisVoiceState.playing
+                  ? Icons.stop_circle_outlined
+                  : Icons.volume_up_rounded,
+            ),
+          ),
         AnimatedOpacity(
           opacity: canRegenerate ? 1 : 0,
           duration: const Duration(milliseconds: 250),

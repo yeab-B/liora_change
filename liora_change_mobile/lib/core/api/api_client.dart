@@ -19,7 +19,7 @@ const String apiBaseUrl = String.fromEnvironment(
 /// Enable with `--dart-define=USE_MOCK_API=true` while the Laravel API is
 /// still being built. Off by default, so a normal build always talks to the
 /// real server.
-const bool useMockApi = bool.fromEnvironment('USE_MOCK_API');
+const bool useMockApi = true;
 
 /// Set when the API rejects the stored token.
 ///

@@ -45,7 +45,21 @@ Dashboard _dashboard({
   bool checkedInToday = false,
   bool recoveryActive = false,
   int currentStreak = 2,
+  List<Map<String, dynamic>>? extraChallenges,
 }) {
+  final List<Map<String, dynamic>> challenges = <Map<String, dynamic>>[
+    if (withChallenge)
+      <String, dynamic>{
+        'id': 1,
+        'title': 'Morning Walk',
+        'status': 'active',
+        'progress_percent': 28.57,
+        'current_streak': currentStreak,
+        'checked_in_today': checkedInToday,
+      },
+    ...?extraChallenges,
+  ];
+
   return Dashboard.fromJson(<String, dynamic>{
     'user': <String, dynamic>{
       'name': 'Alex Demo',
@@ -56,21 +70,13 @@ Dashboard _dashboard({
     },
     'today': <String, dynamic>{
       'date': '2026-07-26',
-      'active_challenges_count': withChallenge ? 1 : 0,
+      'active_challenges_count': challenges.length,
       'completed_checkins_count': checkedInToday ? 1 : 0,
-      'pending_checkins_count': withChallenge && !checkedInToday ? 1 : 0,
+      'pending_checkins_count': challenges.isEmpty
+          ? 0
+          : challenges.length - (checkedInToday ? 1 : 0),
     },
-    'active_challenges': <Map<String, dynamic>>[
-      if (withChallenge)
-        <String, dynamic>{
-          'id': 1,
-          'title': 'Morning Walk',
-          'status': 'active',
-          'progress_percent': 28.57,
-          'current_streak': currentStreak,
-          'checked_in_today': checkedInToday,
-        },
-    ],
+    'active_challenges': challenges,
     'recovery': recoveryActive
         ? <String, dynamic>{
             'active': true,
@@ -273,6 +279,62 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('create'), findsOneWidget);
+  });
+
+  testWidgets('the + beside the motivation quote opens create', (
+    WidgetTester tester,
+  ) async {
+    await _pumpHome(tester, _FakeDashboardRepository(() async => _dashboard()));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: find.byType(MotivationCard),
+        matching: find.byIcon(Icons.add_rounded),
+      ),
+      findsNothing,
+    );
+    expect(find.byIcon(Icons.add_rounded), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.add_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.text('create'), findsOneWidget);
+  });
+
+  testWidgets('every active challenge appears on home', (
+    WidgetTester tester,
+  ) async {
+    await _pumpHome(
+      tester,
+      _FakeDashboardRepository(
+        () async => _dashboard(
+          extraChallenges: <Map<String, dynamic>>[
+            <String, dynamic>{
+              'id': 2,
+              'title': 'No Sugar Week',
+              'status': 'active',
+              'progress_percent': 0,
+              'current_streak': 0,
+              'checked_in_today': false,
+            },
+            <String, dynamic>{
+              'id': 3,
+              'title': 'Stretch every morning',
+              'status': 'active',
+              'progress_percent': 14.0,
+              'current_streak': 1,
+              'checked_in_today': true,
+            },
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Morning Walk'), findsOneWidget);
+    expect(find.text('No Sugar Week'), findsOneWidget);
+    expect(find.text('Stretch every morning'), findsOneWidget);
+    expect(find.text('Check in today'), findsNWidgets(2));
   });
 
   testWidgets('a recovery payload surfaces its banner above the challenge', (

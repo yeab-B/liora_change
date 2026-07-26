@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liora_change_mobile/core/api/api_exception.dart';
+import 'package:liora_change_mobile/core/services/addis_voice_service.dart';
 import 'package:liora_change_mobile/core/theme/app_theme.dart';
 import 'package:liora_change_mobile/core/widgets/chat_bubble.dart';
 import 'package:liora_change_mobile/features/coach/data/chat_repository.dart';
@@ -10,6 +11,16 @@ import 'package:liora_change_mobile/features/coach/presentation/coach_chat_scree
 import 'package:liora_change_mobile/models/chat_source.dart';
 
 import '../../support/fake_chat_repository.dart';
+
+/// Keeps widget tests offline — demo TTS must not call Addis AI.
+class _SilentVoice extends AddisVoiceController {
+  @override
+  AddisVoiceStatus build() =>
+      const AddisVoiceStatus(state: AddisVoiceState.idle);
+
+  @override
+  Future<void> play(String text) async {}
+}
 
 Future<void> _pumpCoach(
   WidgetTester tester,
@@ -27,6 +38,7 @@ Future<void> _pumpCoach(
     ProviderScope(
       overrides: <Override>[
         chatRepositoryProvider.overrideWithValue(repository),
+        addisVoiceProvider.overrideWith(_SilentVoice.new),
       ],
       child: MaterialApp(
         theme: theme ?? AppTheme.light,

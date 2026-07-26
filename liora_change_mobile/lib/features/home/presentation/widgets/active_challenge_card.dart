@@ -5,6 +5,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/progress_bar.dart';
+import '../../../../core/widgets/streak_badge.dart';
 import '../../../../models/challenge.dart';
 
 /// The day's main act: what the member signed up for, how far along they are,
@@ -35,6 +36,8 @@ class ActiveChallengeCard extends StatelessWidget {
               Expanded(
                 child: Text(challenge.title, style: theme.textTheme.titleLarge),
               ),
+              StreakBadge(streak: challenge.currentStreak, compact: true),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 '${challenge.progressPercent.round()}%',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -52,7 +55,7 @@ class ActiveChallengeCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           if (challenge.checkedInToday)
-            const _CheckedInToday()
+            _DayLogged(skipped: challenge.skippedToday)
           else
             PrimaryButton(
               label: 'Check in today',
@@ -65,15 +68,17 @@ class ActiveChallengeCard extends StatelessWidget {
   }
 }
 
-/// Deliberately celebratory rather than a greyed-out button — the day is done,
-/// not unavailable.
-class _CheckedInToday extends StatelessWidget {
-  const _CheckedInToday();
+/// Celebratory for a completed day; calm amber when the member skipped.
+class _DayLogged extends StatelessWidget {
+  const _DayLogged({required this.skipped});
+
+  final bool skipped;
 
   @override
   Widget build(BuildContext context) {
     final AppSemanticColors semantic = context.semanticColors;
     final TextTheme text = Theme.of(context).textTheme;
+    final Color tone = skipped ? semantic.recovery : semantic.success;
 
     return Container(
       width: double.infinity,
@@ -82,17 +87,23 @@ class _CheckedInToday extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: semantic.success.withValues(alpha: 0.12),
+        color: tone.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppRadius.button),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(Icons.check_circle_rounded, color: semantic.success, size: 22),
+          Icon(
+            skipped
+                ? Icons.restart_alt_rounded
+                : Icons.check_circle_rounded,
+            color: tone,
+            size: 22,
+          ),
           const SizedBox(width: AppSpacing.xs),
           Text(
-            'Checked in today',
-            style: text.bodyLarge?.copyWith(color: semantic.success),
+            skipped ? 'Skipped today — come back tomorrow' : 'Checked in today',
+            style: text.bodyLarge?.copyWith(color: tone),
           ),
         ],
       ),

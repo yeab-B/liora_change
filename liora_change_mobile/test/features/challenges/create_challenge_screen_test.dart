@@ -27,6 +27,11 @@ Future<void> _pumpCreate(
     initialLocation: '/challenges/create',
     routes: <RouteBase>[
       GoRoute(
+        path: '/home',
+        builder: (BuildContext context, GoRouterState state) =>
+            const Scaffold(body: Text('home')),
+      ),
+      GoRoute(
         path: '/challenges',
         builder: (BuildContext context, GoRouterState state) =>
             const Scaffold(body: Text('list')),
@@ -148,6 +153,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.createCalls, 1);
+    expect(repository.activateCalls, 1);
     expect(repository.lastCreateRequest, <String, Object?>{
       'title': 'No Sugar Week',
       'description': 'Skip added sugar for seven days.',
@@ -156,7 +162,7 @@ void main() {
       'duration_days': 7,
       'category_id': 1,
     });
-    expect(find.text('detail 42'), findsOneWidget);
+    expect(find.text('home'), findsOneWidget);
   });
 
   testWidgets('a custom title submits just the title and category', (

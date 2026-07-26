@@ -124,13 +124,15 @@ class _Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Challenge? challenge = dashboard.primaryChallenge;
+    final List<Challenge> challenges = dashboard.activeChallenges;
+    final Challenge? primary = dashboard.primaryChallenge;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         GreetingHeader(
           user: dashboard.user,
+          activeChallenges: challenges,
           onOpenCoach: () => context.push(AppRoute.coach.path),
           onOpenProfile: () => context.push(AppRoute.profile.path),
         ),
@@ -142,17 +144,28 @@ class _Dashboard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
         ],
-        if (challenge != null) ...<Widget>[
-          ActiveChallengeCard(
-            challenge: challenge,
-            onCheckIn: () => _openCheckIn(context, challenge),
-            onOpen: () => context.push('/challenges/${challenge.id}'),
+        if (challenges.isNotEmpty) ...<Widget>[
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton.filledTonal(
+              onPressed: () => context.push(AppRoute.createChallenge.path),
+              tooltip: 'New challenge',
+              icon: const Icon(Icons.add_rounded),
+            ),
           ),
-          const SizedBox(height: AppSpacing.md),
-          MotivationCard(
-            challengeId: challenge.id,
-            preview: dashboard.motivationPreview,
-          ),
+          for (final Challenge challenge in challenges) ...<Widget>[
+            ActiveChallengeCard(
+              challenge: challenge,
+              onCheckIn: () => _openCheckIn(context, challenge),
+              onOpen: () => context.push('/challenges/${challenge.id}'),
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+          if (primary != null)
+            MotivationCard(
+              challengeId: primary.id,
+              preview: dashboard.motivationPreview,
+            ),
         ] else
           EmptyState(
             icon: Icons.eco_rounded,

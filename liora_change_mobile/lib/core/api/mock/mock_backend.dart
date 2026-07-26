@@ -479,15 +479,14 @@ class MockBackend {
     final bool completed = status == 'completed';
     final int xpEarned = completed ? xpPerCompletedCheckIn : 0;
 
-    // Contract §5: complete extends the streak, a skip resets it to zero.
     if (completed) {
-      user.currentStreak += 1;
-      user.longestStreak = max(user.longestStreak, user.currentStreak);
       user.xpTotal += xpEarned;
-    } else {
-      user.currentStreak = 0;
     }
 
+    // Streak is per challenge and calendar-based (contract §5): a completed
+    // day counts only when it continues yesterday, otherwise the streak
+    // restarts at 1. Skip breaks that challenge's streak; other challenges
+    // are untouched.
     final _CheckIn checkIn = _CheckIn(
       id: _nextCheckInId++,
       challengeId: challenge.id,
@@ -497,11 +496,18 @@ class MockBackend {
       mood: body['mood'] as int?,
       energy: body['energy'] as int?,
       xpEarned: xpEarned,
-      streakAfter: user.currentStreak,
+      streakAfter: 0,
       createdAt: DateTime.now(),
     );
     _checkIns.add(checkIn);
     challenge.updatedAt = DateTime.now();
+
+    final List<_CheckIn> history = _checkInsFor(challenge.id);
+    final int challengeStreak = completed
+        ? _challengeStreakAt(history, date)
+        : 0;
+    checkIn.streakAfter = challengeStreak;
+    _syncUserStreak(user);
 
     if (completed) {
       _xpLedger.add(
@@ -526,8 +532,8 @@ class MockBackend {
       'data': <String, dynamic>{
         'check_in': _checkInJson(checkIn),
         'summary': <String, dynamic>{
-          'current_streak': user.currentStreak,
-          'longest_streak': user.longestStreak,
+          'current_streak': challengeStreak,
+          'longest_streak': _challengeLongestStreak(_checkInsFor(challenge.id)),
           'xp_total': user.xpTotal,
           'xp_earned': xpEarned,
           'challenge_progress_percent': _progressPercent(challenge),
@@ -535,6 +541,21 @@ class MockBackend {
         },
       },
     });
+  }
+
+  /// Home's flame uses `user.current_streak` — keep it as the best live
+  /// challenge streak so multi-challenge days never double-count a calendar day.
+  void _syncUserStreak(_User user) {
+    int best = 0;
+    for (final _Challenge challenge in _challenges) {
+      if (challenge.userId != user.id) continue;
+      if (challenge.status != 'active' && challenge.status != 'completed') {
+        continue;
+      }
+      best = max(best, _challengeStreak(_checkInsFor(challenge.id)));
+    }
+    user.currentStreak = best;
+    user.longestStreak = max(user.longestStreak, best);
   }
 
   void _awardBadges(_User user, _Challenge challenge, _CheckIn checkIn) {
@@ -558,7 +579,7 @@ class MockBackend {
     if (checkIn.status != 'completed') return;
 
     unlock('first_checkin', 'First step', 'You logged your first check-in.');
-    if (user.currentStreak >= 3) {
+    if (_challengeStreak(_checkInsFor(challenge.id)) >= 3) {
       unlock(
         'streak_3',
         'Three in a row',
@@ -576,15 +597,28 @@ class MockBackend {
   // -------------------------------------------------------------- dashboard
 
   Map<String, dynamic> _dashboardJson(_User user) {
+    _syncUserStreak(user);
+
     final List<_Challenge> active = _challenges
         .where((_Challenge c) => c.userId == user.id && c.status == 'active')
-        .toList();
+        .toList()
+      // Newest first so a just-created challenge lands at the top of Home.
+      ..sort((_Challenge a, _Challenge b) => b.id.compareTo(a.id));
 
     final int completedToday = active
         .where(
           (_Challenge c) => _checkInsFor(c.id).any(
             (_CheckIn ci) =>
                 _sameDay(ci.date, _today()) && ci.status == 'completed',
+          ),
+        )
+        .length;
+
+    // Pending = not yet logged today (skip or complete both clear the day).
+    final int pendingToday = active
+        .where(
+          (_Challenge c) => !_checkInsFor(c.id).any(
+            (_CheckIn ci) => _sameDay(ci.date, _today()),
           ),
         )
         .length;
@@ -597,7 +631,7 @@ class MockBackend {
         'date': _dateString(_today()),
         'active_challenges_count': active.length,
         'completed_checkins_count': completedToday,
-        'pending_checkins_count': active.length - completedToday,
+        'pending_checkins_count': pendingToday,
       },
       'active_challenges': active.map(_challengeJson).toList(),
       'recovery': recovery,
@@ -881,23 +915,44 @@ class MockBackend {
       'checked_in_today': history.any(
         (_CheckIn c) => _sameDay(c.date, _today()),
       ),
+      'today_check_in_status': _todayCheckInStatus(history),
       'created_at': _dateTimeString(challenge.createdAt),
       'updated_at': _dateTimeString(challenge.updatedAt ?? challenge.createdAt),
     };
   }
 
-  /// Consecutive completed days ending today or yesterday.
+  String? _todayCheckInStatus(List<_CheckIn> history) {
+    for (final _CheckIn checkIn in history) {
+      if (_sameDay(checkIn.date, _today())) return checkIn.status;
+    }
+    return null;
+  }
+
+  /// Live streak: consecutive completed days ending today, or yesterday when
+  /// today is still open.
   int _challengeStreak(List<_CheckIn> history) {
     final Map<String, _CheckIn> byDate = <String, _CheckIn>{
       for (final _CheckIn c in history) _dateString(c.date): c,
     };
 
-    DateTime cursor = _today();
-    if (byDate[_dateString(cursor)] == null) {
-      cursor = cursor.subtract(const Duration(days: 1));
+    DateTime tip = _today();
+    if (byDate[_dateString(tip)] == null) {
+      tip = tip.subtract(const Duration(days: 1));
     }
+    return _challengeStreakAt(history, tip);
+  }
+
+  /// Consecutive completed days ending on [tip] (inclusive). A skip or gap on
+  /// that day yields zero — used for `streak_after` on a historical check-in.
+  int _challengeStreakAt(List<_CheckIn> history, DateTime tip) {
+    final Map<String, _CheckIn> byDate = <String, _CheckIn>{
+      for (final _CheckIn c in history) _dateString(c.date): c,
+    };
+
+    if (byDate[_dateString(tip)]?.status != 'completed') return 0;
 
     int streak = 0;
+    DateTime cursor = tip;
     while (byDate[_dateString(cursor)]?.status == 'completed') {
       streak++;
       cursor = cursor.subtract(const Duration(days: 1));
@@ -1161,7 +1216,7 @@ class _CheckIn {
   final int? mood;
   final int? energy;
   final int xpEarned;
-  final int streakAfter;
+  int streakAfter;
   final DateTime createdAt;
 }
 

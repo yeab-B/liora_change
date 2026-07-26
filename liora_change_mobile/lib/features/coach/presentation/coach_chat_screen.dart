@@ -1,7 +1,15 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ai/demo_amharic_script.dart';
+import '../../../core/config/demo_ai_config.dart';
+import '../../../core/services/addis_voice_service.dart';
+import '../../../core/services/voice_recorder.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_snackbar.dart';
 import '../../../core/widgets/chat_bubble.dart';
 import '../../../core/widgets/content_bounds.dart';
 import '../../../models/chat_message.dart';
@@ -13,15 +21,10 @@ import '../application/chat_controller.dart';
 class CoachChatScreen extends ConsumerStatefulWidget {
   const CoachChatScreen({super.key});
 
-  static const String greeting =
-      'I am your coach. Ask me anything about building a habit, keeping a '
-      'streak, or picking it back up after a slip.';
+  /// Demo welcome — spoken and shown in Amharic.
+  static const String greeting = DemoAmharicScript.greeting;
 
-  static const List<String> starters = <String>[
-    'How do I build a streak?',
-    'I keep skipping — help?',
-    'How small should I start?',
-  ];
+  static const List<String> starters = DemoAmharicScript.starters;
 
   @override
   ConsumerState<CoachChatScreen> createState() => _CoachChatScreenState();
@@ -30,16 +33,67 @@ class CoachChatScreen extends ConsumerStatefulWidget {
 class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
   final TextEditingController _input = TextEditingController();
   final ScrollController _scroll = ScrollController();
+  final VoiceRecorder _recorder = VoiceRecorder();
+  bool _recording = false;
+  bool _greetedAloud = false;
 
   /// Whether the member was reading the newest message before this change.
   /// If they had scrolled up into the history, they are left where they are.
   bool _wasAtBottom = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Speak the Amharic welcome once when the coach opens for the demo.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _greetedAloud || !DemoAiConfig.addisEnabled) return;
+      _greetedAloud = true;
+      unawaited(
+        ref.read(addisVoiceProvider.notifier).play(DemoAmharicScript.greeting),
+      );
+    });
+  }
+
+  @override
   void dispose() {
     _input.dispose();
     _scroll.dispose();
+    unawaited(_recorder.dispose());
     super.dispose();
+  }
+
+  Future<void> _toggleMic() async {
+    if (!DemoAiConfig.addisEnabled) {
+      AppSnackbar.showInfo(
+        context,
+        'Addis AI voice is not configured on this build.',
+      );
+      return;
+    }
+
+    if (_recording) {
+      setState(() => _recording = false);
+      try {
+        final Uint8List? bytes = await _recorder.stop();
+        if (bytes == null || bytes.isEmpty || !mounted) return;
+        _wasAtBottom = _isNearBottom;
+        await ref.read(chatControllerProvider.notifier).sendAudio(bytes);
+        _scrollToEndSoon();
+      } on Object catch (error) {
+        if (!mounted) return;
+        AppSnackbar.showError(context, 'Could not send voice: $error');
+      }
+      return;
+    }
+
+    try {
+      await _recorder.start();
+      if (!mounted) return;
+      setState(() => _recording = true);
+    } on Object catch (error) {
+      if (!mounted) return;
+      AppSnackbar.showError(context, 'Microphone: $error');
+    }
   }
 
   bool get _isNearBottom {
@@ -78,6 +132,13 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
       final bool grew = (previous?.messages.length ?? 0) < next.messages.length;
       if (grew && _wasAtBottom) _scrollToEndSoon();
       if (!grew) _wasAtBottom = _isNearBottom;
+
+      // Voice questions get a spoken Amharic answer for the demo video.
+      final String? speak = next.autoSpeakText;
+      if (speak != null && speak != previous?.autoSpeakText) {
+        unawaited(ref.read(addisVoiceProvider.notifier).play(speak));
+        ref.read(chatControllerProvider.notifier).clearAutoSpeak();
+      }
     });
 
     return Scaffold(
@@ -92,8 +153,10 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
             ),
             _Composer(
               controller: _input,
-              enabled: !chat.isWaitingForReply,
+              enabled: !chat.isWaitingForReply && !_recording,
+              recording: _recording,
               onSend: _send,
+              onMic: DemoAiConfig.addisEnabled ? _toggleMic : null,
             ),
           ],
         ),
@@ -110,6 +173,8 @@ class _Conversation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AddisVoiceStatus voice = ref.watch(addisVoiceProvider);
+
     return ListView.builder(
       controller: controller,
       padding: const EdgeInsets.symmetric(
@@ -121,10 +186,20 @@ class _Conversation extends ConsumerWidget {
         if (index >= chat.messages.length) return const TypingIndicator();
 
         final ChatMessage message = chat.messages[index];
+        final bool speakingThis =
+            voice.currentText == message.content &&
+            (voice.state == AddisVoiceState.playing ||
+                voice.state == AddisVoiceState.loading);
+
         return ChatBubble(
           message: message,
           onRetry: () =>
               ref.read(chatControllerProvider.notifier).retry(message.id),
+          onSpeak: !message.isFromUser && DemoAiConfig.addisEnabled
+              ? () => ref.read(addisVoiceProvider.notifier).play(message.content)
+              : null,
+          isSpeaking: speakingThis && voice.state == AddisVoiceState.playing,
+          isSpeakLoading: speakingThis && voice.state == AddisVoiceState.loading,
         );
       },
     );
@@ -154,7 +229,13 @@ class _Welcome extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             Text(
               CoachChatScreen.greeting,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              DemoAmharicScript.whatIsApp,
+              style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -272,11 +353,15 @@ class _Composer extends StatelessWidget {
     required this.controller,
     required this.enabled,
     required this.onSend,
+    this.onMic,
+    this.recording = false,
   });
 
   final TextEditingController controller;
   final bool enabled;
   final ValueChanged<String> onSend;
+  final VoidCallback? onMic;
+  final bool recording;
 
   @override
   Widget build(BuildContext context) {
@@ -296,17 +381,32 @@ class _Composer extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
+              if (onMic != null)
+                IconButton(
+                  onPressed: recording || enabled ? onMic : null,
+                  tooltip: recording
+                      ? 'Stop and send voice'
+                      : 'Speak in Amharic or English',
+                  icon: Icon(
+                    recording ? Icons.stop_circle_rounded : Icons.mic_rounded,
+                    color: recording
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.primary,
+                  ),
+                ),
               Expanded(
                 child: TextField(
                   controller: controller,
-                  enabled: enabled,
+                  enabled: enabled && !recording,
                   minLines: 1,
                   maxLines: 4,
                   textInputAction: TextInputAction.send,
                   textCapitalization: TextCapitalization.sentences,
                   onSubmitted: enabled ? onSend : null,
-                  decoration: const InputDecoration(
-                    hintText: 'Ask your coach…',
+                  decoration: InputDecoration(
+                    hintText: recording
+                        ? 'Listening with Addis AI…'
+                        : 'Ask your coach…',
                     border: InputBorder.none,
                   ),
                 ),
@@ -314,7 +414,8 @@ class _Composer extends StatelessWidget {
               ValueListenableBuilder<TextEditingValue>(
                 valueListenable: controller,
                 builder: (BuildContext context, TextEditingValue value, _) {
-                  final bool canSend = enabled && value.text.trim().isNotEmpty;
+                  final bool canSend =
+                      enabled && !recording && value.text.trim().isNotEmpty;
                   return IconButton.filled(
                     onPressed: canSend ? () => onSend(controller.text) : null,
                     tooltip: 'Send',

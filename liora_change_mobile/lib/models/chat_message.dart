@@ -46,12 +46,16 @@ class ChatMessage {
     );
   }
 
-  ChatMessage copyWith({MessageDelivery? delivery, int? sessionId}) {
+  ChatMessage copyWith({
+    MessageDelivery? delivery,
+    int? sessionId,
+    String? content,
+  }) {
     return ChatMessage(
       id: id,
       sessionId: sessionId ?? this.sessionId,
       role: role,
-      content: content,
+      content: content ?? this.content,
       createdAt: createdAt,
       sources: sources,
       delivery: delivery ?? this.delivery,

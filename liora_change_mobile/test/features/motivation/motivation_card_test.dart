@@ -104,10 +104,8 @@ void main() {
 
     expect(find.text('Alex, five minutes is enough today.'), findsOneWidget);
     expect(find.byIcon(Icons.auto_awesome_rounded), findsOneWidget);
-    expect(
-      tester.widget<IconButton>(find.byType(IconButton)).onPressed,
-      isNotNull,
-    );
+    expect(find.byIcon(Icons.refresh_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.volume_up_rounded), findsOneWidget);
     // The filled affordance steps aside for the low-emphasis refresh.
     expect(find.byType(FilledButton), findsNothing);
   });

@@ -24,6 +24,7 @@ class Challenge {
     this.completedCheckins = 0,
     this.missedCheckins = 0,
     this.checkedInToday = false,
+    this.todayCheckInStatus,
     this.createdAt,
     this.updatedAt,
   });
@@ -50,10 +51,16 @@ class Challenge {
   /// Skipped and missed days combined, per the contract's note.
   final int missedCheckins;
   final bool checkedInToday;
+
+  /// Today's log when [checkedInToday] is true — `completed` or `skipped`.
+  final CheckInStatus? todayCheckInStatus;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  bool get skippedToday => todayCheckInStatus == CheckInStatus.skipped;
+
   factory Challenge.fromJson(Map<String, dynamic> json) {
+    final Object? todayStatus = json['today_check_in_status'];
     return Challenge(
       id: json['id'] as int,
       title: json['title'] as String,
@@ -71,6 +78,9 @@ class Challenge {
       completedCheckins: json['completed_checkins'] as int? ?? 0,
       missedCheckins: json['missed_checkins'] as int? ?? 0,
       checkedInToday: json['checked_in_today'] as bool? ?? false,
+      todayCheckInStatus: todayStatus == null
+          ? null
+          : CheckInStatus.fromWire(todayStatus),
       createdAt: _parseDateTime(json['created_at']),
       updatedAt: _parseDateTime(json['updated_at']),
     );

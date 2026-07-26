@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/misc.dart';
 
 import '../../../models/challenge.dart';
 import '../../../models/check_in.dart';
+import '../../home/application/dashboard_controller.dart';
 import '../data/challenge_repository.dart';
 import 'challenge_list_controller.dart';
 
@@ -40,6 +41,7 @@ class ChallengeDetailController extends AsyncNotifier<Challenge> {
 
     state = result;
     ref.invalidate(challengeListControllerProvider);
+    ref.invalidate(dashboardControllerProvider);
     return true;
   }
 

@@ -20,8 +20,7 @@ class Dashboard {
   /// Short motivation line; Issue #8 replaces this with a generated card.
   final String? motivationPreview;
 
-  /// The challenge Home leads with. The contract allows several, but the MVP
-  /// demo runs on one at a time.
+  /// The challenge Home leads with for motivation — usually the newest active.
   Challenge? get primaryChallenge =>
       activeChallenges.isEmpty ? null : activeChallenges.first;
 

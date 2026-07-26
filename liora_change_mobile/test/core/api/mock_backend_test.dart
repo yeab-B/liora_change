@@ -378,6 +378,13 @@ void main() {
       expect((dashboard['user'] as Map<String, dynamic>)['xp_total'], 10);
       expect((dashboard['user'] as Map<String, dynamic>)['current_streak'], 0);
 
+      final Map<String, dynamic> challenge =
+          (dashboard['active_challenges'] as List<dynamic>).first
+              as Map<String, dynamic>;
+      expect(challenge['current_streak'], 0);
+      expect(challenge['completed_checkins'], 1);
+      expect(challenge['progress_percent'], 14.29);
+
       final Map<String, dynamic> recovery =
           dashboard['recovery'] as Map<String, dynamic>;
       expect(recovery['active'], isTrue);
@@ -386,6 +393,82 @@ void main() {
       expect(
         (recovery['suggested_action'] as Map<String, dynamic>)['challenge_id'],
         recovery['challenge_id'],
+      );
+    });
+
+    test('a gap day without a skip restarts the streak at one', () {
+      final int id =
+          client.data(
+                client.call(
+                  'POST',
+                  '/challenges',
+                  body: <String, dynamic>{'title': 'Focus Hour'},
+                ),
+              )['id']
+              as int;
+      client.call('POST', '/challenges/$id/activate');
+
+      client.call(
+        'POST',
+        '/challenges/$id/check-ins',
+        body: <String, dynamic>{
+          'status': 'completed',
+          'check_in_date': _daysAgo(2),
+        },
+      );
+      // Yesterday left blank — silent miss, not a skip row.
+      final MockResponse today = client.call(
+        'POST',
+        '/challenges/$id/check-ins',
+        body: <String, dynamic>{'status': 'completed'},
+      );
+
+      final Map<String, dynamic> summary =
+          client.data(today)['summary'] as Map<String, dynamic>;
+      expect(summary['current_streak'], 1);
+
+      final Map<String, dynamic> challenge = client.data(
+        client.call('GET', '/challenges/$id'),
+      );
+      expect(challenge['current_streak'], 1);
+    });
+
+    test('two challenges on the same day do not double the streak', () {
+      final int walkId =
+          (client.data(client.call('GET', '/dashboard'))['active_challenges']
+                  as List<dynamic>)
+              .first['id']
+          as int;
+      final int focusId =
+          client.data(
+                client.call(
+                  'POST',
+                  '/challenges',
+                  body: <String, dynamic>{'title': 'Focus Hour'},
+                ),
+              )['id']
+              as int;
+      client.call('POST', '/challenges/$focusId/activate');
+
+      client.call(
+        'POST',
+        '/challenges/$walkId/check-ins',
+        body: <String, dynamic>{'status': 'completed'},
+      );
+      client.call(
+        'POST',
+        '/challenges/$focusId/check-ins',
+        body: <String, dynamic>{'status': 'completed'},
+      );
+
+      final Map<String, dynamic> dashboard = client.data(
+        client.call('GET', '/dashboard'),
+      );
+      // Best challenge streak is 1 (comeback after seed skip), not 2.
+      expect((dashboard['user'] as Map<String, dynamic>)['current_streak'], 1);
+      expect(
+        (dashboard['today'] as Map<String, dynamic>)['pending_checkins_count'],
+        0,
       );
     });
 
